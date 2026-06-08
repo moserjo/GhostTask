@@ -1,0 +1,139 @@
+i1 : needsPackage "Dmodules"
+
+o1 = Dmodules
+
+o1 : Package
+
+i2 :     Alg = QQ[t, x, dt, dx, a, WeylAlgebra => {x=>dx, t=> dt}] 
+
+o2 = Alg
+
+o2 : PolynomialRing, 2 differential variable(s)
+
+i3 : R = matrix{{x*dx + dt, a*dx}, {0, x*dx + dt}}                                                                   
+
+o3 = | xdx+dt dxa    |
+     | 0      xdx+dt |
+
+               2         2
+o3 : Matrix Alg  <--- Alg
+
+i4 : B = Dtransposition mingens image syz Dtransposition R
+
+o4 = 0
+
+               2
+o4 : Matrix Alg  <--- 0
+
+i5 : transpose B*(transpose R) -- should be 0
+
+o5 = 0
+
+                      2
+o5 : Matrix 0 <--- Alg
+
+i6 : R' = transpose mingens image syz transpose B  --check if linear combinations of R
+
+o6 = {2} | 1 0 |
+     {2} | 0 1 |
+
+               2         2
+o6 : Matrix Alg  <--- Alg
+
+i7 : RGT1 = R|matrix{{-1},{0}}
+
+o7 = | xdx+dt dxa    -1 |
+     | 0      xdx+dt 0  |
+
+               2         3
+o7 : Matrix Alg  <--- Alg
+
+i8 : BGT1 = Dtransposition mingens image syz Dtransposition RGT1
+
+o8 = | -1      |
+     | 0       |
+     | -xdx-dt |
+
+               3         1
+o8 : Matrix Alg  <--- Alg
+
+i9 : transpose BGT1*(transpose RGT1) -- should be 0
+
+o9 = 0
+
+               1         2
+o9 : Matrix Alg  <--- Alg
+
+i10 : RGT1' = transpose mingens image syz transpose BGT1  --check if linear combinations of RGT1
+
+o10 = {0}  | 0      1 0  |
+      {-2} | xdx+dt 0 -1 |
+
+                2         3
+o10 : Matrix Alg  <--- Alg
+
+i11 : RGT2 = R|matrix{{-1, 0},{0, -1}}
+
+o11 = | xdx+dt dxa    -1 0  |
+      | 0      xdx+dt 0  -1 |
+
+                2         4
+o11 : Matrix Alg  <--- Alg
+
+i12 : BGT2 = Dtransposition mingens image syz Dtransposition RGT2
+
+o12 = | -1      0       |
+      | 0       -1      |
+      | -xdx-dt -dxa    |
+      | 0       -xdx-dt |
+
+                4         2
+o12 : Matrix Alg  <--- Alg
+
+i13 : transpose BGT2*(transpose RGT2) -- should be 0
+
+o13 = 0
+
+                2         2
+o13 : Matrix Alg  <--- Alg
+
+i14 : RGT2' = transpose mingens image syz transpose BGT2  --check if linear combinations of RGT2
+
+o14 = {-2} | xdx+dt dxa    -1 0  |
+      {-2} | 0      xdx+dt 0  -1 |
+
+                2         4
+o14 : Matrix Alg  <--- Alg
+
+i15 : RGT3 = R|matrix{{-1},{-dt}}
+
+o15 = | xdx+dt dxa    -1  |
+      | 0      xdx+dt -dt |
+
+                2         3
+o15 : Matrix Alg  <--- Alg
+
+i16 : BGT3 = Dtransposition mingens image syz Dtransposition RGT3
+
+o16 = | -dtdxa+xdx+dt-1       |
+      | xdtdx+dt^2-dt         |
+      | x2dx^2+2xdtdx+dt^2-dt |
+
+                3         1
+o16 : Matrix Alg  <--- Alg
+
+i17 : transpose BGT3*(transpose RGT3) -- should be 0
+
+o17 = 0
+
+                1         2
+o17 : Matrix Alg  <--- Alg
+
+i18 : RGT3' = transpose mingens image syz transpose BGT3  --check if linear combinations of RGT3
+
+o18 = {-2} | xdx+dt dxa    -1  |
+      {-2} | 0      xdx+dt -dt |
+
+                2         3
+o18 : Matrix Alg  <--- Alg
+

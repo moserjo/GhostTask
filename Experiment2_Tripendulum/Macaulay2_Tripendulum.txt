@@ -1,0 +1,93 @@
+needsPackage "Dmodules"
+Alg = QQ[t, dt, l, g, WeylAlgebra => {t=> dt}] 
+R = matrix{{dt^2*l+g, 0, 0, -1}, {0, dt^2*l+g, 0, -1},{0, 0, dt^2*l+g, -1}}                                                                               
+B = Dtransposition mingens image syz Dtransposition R   
+transpose B*(transpose R)  -- should be 0                              
+R' = transpose mingens image syz transpose  B     
+RGT = R|matrix{{l},{l*dt},{l*t}}                                                                               
+BGT = Dtransposition mingens image syz Dtransposition RGT
+transpose BGT*(transpose RGT) -- should be 0                                        
+RGT' = transpose mingens image syz transpose BGT  
+
+i1 : needsPackage "Dmodules"
+
+o1 = Dmodules
+
+o1 : Package
+
+i2 : Alg = QQ[t, dt, l, g, WeylAlgebra => {t=> dt}] 
+
+o2 = Alg
+
+o2 : PolynomialRing, 1 differential variable(s)
+
+i3 : R = matrix{{dt^2*l+g, 0, 0, -1}, {0, dt^2*l+g, 0, -1},{0, 0, dt^2*l+g, -1}}                                                                               
+
+o3 = | dt^2l+g 0       0       -1 |
+     | 0       dt^2l+g 0       -1 |
+     | 0       0       dt^2l+g -1 |
+
+               3         4
+o3 : Matrix Alg  <--- Alg
+
+i4 : B = Dtransposition mingens image syz Dtransposition R   
+
+o4 = | 1       |
+     | 1       |
+     | 1       |
+     | dt^2l+g |
+
+               4         1
+o4 : Matrix Alg  <--- Alg
+
+i5 : transpose B*(transpose R)  -- should be 0                              
+
+o5 = 0
+
+               1         3
+o5 : Matrix Alg  <--- Alg
+
+i6 : R' = transpose mingens image syz transpose  B     
+
+o6 = {0}  | -1      1 0 0  |
+     {0}  | -1      0 1 0  |
+     {-3} | dt^2l+g 0 0 -1 |
+
+               3         4
+o6 : Matrix Alg  <--- Alg
+
+i7 : RGT = R|matrix{{l},{l*dt},{l*t}}                                                                               
+
+o7 = | dt^2l+g 0       0       -1 l   |
+     | 0       dt^2l+g 0       -1 dtl |
+     | 0       0       dt^2l+g -1 tl  |
+
+               3         5
+o7 : Matrix Alg  <--- Alg
+
+i8 : BGT = Dtransposition mingens image syz Dtransposition RGT
+
+o8 = | 1       -dt^2l2-lg         |
+     | 1       -dt^3l2-dtlg       |
+     | 1       -tdt^2l2+2dtl2-tlg |
+     | dt^2l+g 0                  |
+     | 0       dt^4l2+2dt^2lg+g2  |
+
+               5         2
+o8 : Matrix Alg  <--- Alg
+
+i9 : transpose BGT*(transpose RGT) -- should be 0                                        
+
+o9 = 0
+
+               2         3
+o9 : Matrix Alg  <--- Alg
+
+i10 : RGT' = transpose mingens image syz transpose BGT  
+
+o10 = {-4} | dt^3l+dtg -dt^2l-g  0          -dt+1   0   |
+      {-4} | tdt^2l+tg 0         -dt^2l-g   -t+1    0   |
+      {-4} | -dt^2l-g  tdt^2l+tg -dt^3l-dtg -t+dt+1 -2l |
+
+                3         5
+o10 : Matrix Alg  <--- Alg
