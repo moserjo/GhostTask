@@ -31,7 +31,7 @@ if mode == "extra_npoints_extra_sigma":
 else:
     data_path = os.path.join(
         os.path.dirname(__file__),
-        "../input_data", "inverse",
+        "../../input_data", "inverse",
         "Ex1_n%i_sigma%.2f_PIGP_%s.npz"%(npoints, sigma, mode))
 
 data = np.load(data_path)
@@ -116,6 +116,5 @@ with torch.no_grad():
         )   
 print("saved")
 print("--- %s seconds ---" % (time.time() - start_time))
-
 
 
