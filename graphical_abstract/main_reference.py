@@ -3,7 +3,7 @@ import os
 import torch
 import gpytorch
 import Tripendulum_reference as ex
-import PCGP.gpytorch_tools as gt
+from PCGP.gpytorch import gpytorch_tools as gt
 import numpy as np
 torch.set_default_dtype(torch.float64)
 import time

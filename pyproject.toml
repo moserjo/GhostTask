@@ -1,0 +1,18 @@
+[project]
+name = "ghosttask-experiments"
+version = "0.1.0"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "jupyter>=1.1.1",
+    "matplotlib>=3.10.3",
+    "pandas>=2.3.1",
+    "pcgp",
+    "scipy>=1.16.0",
+    "seaborn>=0.13.2",
+]
+
+[tool.uv]
+package = false
+
+[tool.uv.sources]
+pcgp = { git = "https://github.com/moserjo/PCGP.git", rev = "8bd3c15438d6e166b1270033c41c9693500436e8" }

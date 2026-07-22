@@ -5,7 +5,6 @@ import torch
 import gpytorch
 import Experiment3_analytic_PIGP as ex_PIGP
 import Experiment3_analytic as ex_GT
-import PCGP.gpytorch_tools as gt
 import numpy as np
 torch.set_default_dtype(torch.float64)
 import time

@@ -4,7 +4,6 @@ import os
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.stats import norm
-import PCGP.gpytorch_tools as gt
 from mpl_toolkits.mplot3d import Axes3D  # Needed for 3D plotting
 from matplotlib import cm  # Colormaps
 from matplotlib import gridspec

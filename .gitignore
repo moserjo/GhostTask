@@ -1,6 +1,14 @@
 # Python compiled files
 __pycache__/
 *.pyc
+.venv/
+.pytest_cache/
+.ruff_cache/
+
+# Notebook and operating-system metadata
+.ipynb_checkpoints/
+.DS_Store
+._*
 
 # VSCode settings
 .vscode/
