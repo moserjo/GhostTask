@@ -49,8 +49,8 @@ structure = grid.build_structure(train_x, train_x, num_tasks=num_tasks)
 
 
 
-n = 20
-nu0_vals = jnp.linspace(-1, 3, n)
+n = 21
+nu0_vals = jnp.linspace(.1, 3.1, n)
 ls_vals = jnp.array([1.])#jnp.linspace(min_len, max_len, 1)
 A_vals = jnp.array([6.])#jnp.linspace(.1, 10, n) 
 
@@ -63,8 +63,11 @@ compiled_kernel = jax.jit(partial(
     structure=structure
 ))
 sigma_array = jnp.ones(train_y.shape[0])*sigma
-sigma_array = sigma_array.at[train_x[..., -1] == 2].set(1e-3)
+sigma_array = sigma_array.at[train_x[..., -1] == 4].set(sigmaPIGP)
+sigma_array = sigma_array.at[train_x[..., -1] == 5].set(sigmaPIGP)
 mll_values = grid.mll(params, train_x, train_y, sigma_array, compiled_kernel)
+if not np.isfinite(mll_values).all():
+    raise FloatingPointError("non-finite marginal likelihood in PIGP grid")
 #mll_reshaped = mll_values.reshape(n, n, n)
 output_path = os.path.join(
     os.path.dirname(__file__),
@@ -77,8 +80,10 @@ np.savez_compressed(
             nu0_vals = nu0_vals,
             ls_vals = ls_vals,
             A_vals = A_vals,
-            param_order = np.array(["nu0_vals", "ls_vals", "A_vals"])
+            param_order = np.array(["nu0_vals", "ls_vals", "A_vals"]),
+            true_nu0 = nu0_true,
+            physical_sigma = sigma,
+            residual_sigma = sigmaPIGP,
         )   
-
 
 
