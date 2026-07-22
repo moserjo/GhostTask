@@ -1,0 +1,33 @@
+% Requires \usepackage{booktabs} and \usepackage{siunitx} in the preamble.
+\begin{table}[]
+\sisetup{round-mode=figures, round-precision=2, scientific-notation=true, table-format=1.2e-1, detect-weight=true, detect-shape=true, detect-family=true}
+\begin{tabular}{llSSSSSS}
+\toprule
+{$\frac{\Delta a}{a}$} & & \multicolumn{3}{c}{\textbf{GT}} & \multicolumn{3}{c}{PIGP} \\
+\cmidrule(lr){3-5} \cmidrule(lr){6-8}
+n & {$\sigma$} & {standard} & {extra\_n} & {extra\_n+$\sigma$} & {standard} & {extra\_n} & {extra\_n+$\sigma$} \\
+\midrule
+3 & 0.001 & 0.0269712 & \multicolumn{2}{c}{{\itshape \num{0.000690726}}} & 0.00988701 & \multicolumn{2}{c}{{\bfseries \num{0.000539473}}} \\
+3 & 0.01 & 0.0225396 & 0.00419155 & \bfseries 0.00242583 & 0.011999 & 0.00956373 & \itshape 0.00665757 \\
+3 & 0.1 & \itshape 0.0408601 & 0.0589168 & 0.107903 & \bfseries 0.0203033 & 0.0520605 & 0.14396 \\
+3 & 0.2 & 0.140378 & \itshape 0.13413 & 0.332995 & \bfseries 0.0286864 & 0.124976 & 0.436692 \\
+\addlinespace
+5 & 0.001 & 0.00227358 & \multicolumn{2}{c}{{\itshape \num{0.000287624}}} & 0.000122653 & \multicolumn{2}{c}{{\bfseries \num{5.42254e-05}}} \\
+5 & 0.01 & \bfseries 0.000529486 & 0.00189231 & 0.000643609 & \itshape 0.00456023 & 0.00500963 & 0.00516371 \\
+5 & 0.1 & \itshape 0.00225869 & 0.00872915 & 0.0152957 & \bfseries 0.000904185 & 0.0063666 & 0.0273771 \\
+5 & 0.2 & 0.0587492 & 0.0503985 & \bfseries 0.0354992 & \itshape 0.058679 & 0.0790997 & 0.274358 \\
+\addlinespace
+10 & 0.001 & \bfseries 1.95614e-06 & \multicolumn{2}{c}{\num{2.83598e-05}} & 9.55305e-05 & \multicolumn{2}{c}{{\itshape \num{9.05411e-05}}} \\
+10 & 0.01 & 0.00147021 & 0.00150338 & \bfseries 0.000255296 & \itshape 0.000899772 & 0.000912255 & 0.000920975 \\
+10 & 0.1 & \itshape 0.00548398 & 0.00911438 & 0.00702133 & 0.00737914 & 0.00683472 & \bfseries 0.00437253 \\
+10 & 0.2 & 0.0498794 & 0.0546408 & \bfseries 0.0168896 & 0.0537668 & \itshape 0.0531451 & 0.0973358 \\
+\addlinespace
+15 & 0.001 & \multicolumn{3}{c}{{\itshape \num{0.000119373}}} & \multicolumn{3}{c}{{\bfseries \num{6.03457e-05}}} \\
+15 & 0.01 & \multicolumn{2}{c}{\num{0.00180991}} & \bfseries 0.000794388 & \multicolumn{2}{c}{{\itshape \num{0.000854158}}} & 0.000932702 \\
+15 & 0.1 & \multicolumn{2}{c}{{\bfseries \num{0.00315102}}} & 0.00541463 & \multicolumn{2}{c}{\num{0.0109928}} & \itshape 0.00960895 \\
+15 & 0.2 & \multicolumn{2}{c}{\num{0.0282832}} & \bfseries 0.00406527 & \multicolumn{2}{c}{{\itshape \num{0.0128957}}} & 0.0309936 \\
+\midrule
+\multicolumn{2}{l}{\textbf{overall}} & 0.00417242 & 0.0038405 & \bfseries 0.00275235 & \itshape 0.00350166 & 0.00365327 & 0.00519623 \\
+\bottomrule
+\end{tabular}
+\end{table}

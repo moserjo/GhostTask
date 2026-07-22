@@ -1,0 +1,208 @@
+================================================================================
+OCKHAM'S RAZOR BIAS IN PHYSICS-CONSTRAINED GPs (GhostTasking project notes)
+================================================================================
+Summary of the analysis of why conditioning extra "zero / ghost" collocation
+tasks (and lowering their noise) biases the inferred physical parameter for PIGP
+but not for GT. Scope: Experiments 1 (pedagogical), 2 (tripendulum),
+3 (magnetostatics).
+
+Companion figure: graphs/ockhams_razor_mechanism.png
+Companion script:  ockhams_razor_figure.py
+
+
+--------------------------------------------------------------------------------
+0. THE PHENOMENON
+--------------------------------------------------------------------------------
+- Ex3: PIGP consistently infers nu0 ~ 0.68 (true value 1.0), GT ~ 1.11. The
+  PIGP estimate is biased LOW and is very consistent across runs (low variance,
+  high bias -> "confidently wrong").
+- Data modes (same data set per condition):
+    standard                   : baseline collocation grid
+    extra_npoints              : more points on the zero/ghost task(s)
+    extra_npoints_extra_sigma  : same points, but the zero-task observation
+                                 noise is dropped from sigma^2 to ~1e-6
+                                 (soft constraint -> near-hard constraint)
+- Empirically: extra collocation (and extra_sigma) HELP GT and HURT/are neutral
+  for PIGP. extra_sigma is the more damaging knob for PIGP.
+
+
+--------------------------------------------------------------------------------
+1. THE GP MARGINAL LIKELIHOOD AND TWO COMPETING FORCES
+--------------------------------------------------------------------------------
+Negative log marginal likelihood (the training objective):
+
+    -mll = 1/2 y^T (K + Sigma)^-1 y  +  1/2 log|K + Sigma|  +  (n/2) log(2 pi)
+           \_______ data fit _______/    \____ Occam term ____/
+
+Let M = K + Sigma, Sigma = diag(noise). The parameter estimate balances:
+    * data-fit curvature : d^2/dtheta^2 [ 1/2 y^T M^-1 y ]   (Fisher information)
+    * Occam pull         : d/dtheta     [ 1/2 log|M| ]       (complexity penalty)
+
+To first order the bias of the optimum is
+
+    bias(theta) ~ (Occam pull) / (data-fit curvature).
+
+Key point: the log-determinant term penalizes models whose prior puts variance
+where the data does not need it. If a parameter scales the prior variance of a
+task that carries NO usable signal, the Occam term shrinks that parameter for
+free.
+
+
+--------------------------------------------------------------------------------
+2. CAN YOU ATTRIBUTE ONE TASK'S CONTRIBUTION TO THE LOG-DET?  YES (SCHUR)
+--------------------------------------------------------------------------------
+log|M| is NOT an additive sum over tasks, but it splits MULTIPLICATIVELY by
+conditioning. Partition rows into data tasks d (noisy, nonzero y) and zero tasks
+z (y_z = 0):
+
+    log|M| = log|M_dd| + log|S_z|,
+    S_z = M_zz - M_zd M_dd^-1 M_dz    (Schur complement
+                                       = posterior cov of the zero tasks
+                                         given the data tasks, + their noise)
+
+So "the zero tasks' contribution to the penalty" is well defined: log|S_z|.
+With y_z = 0, the quadratic term reduces to y_d^T (M/M_zz)^-1 y_d (pure data
+fit). All parameter dependence that flows through the zero-task kernel block
+lives in log|S_z|.
+
+(Gradient view: d log|M| / dtheta = tr(M^-1 dM/dtheta); if theta enters only the
+zero-task block, dM/dtheta is supported there, so only that block contributes to
+the score. That is the precise meaning of "this task pulls theta.")
+
+
+--------------------------------------------------------------------------------
+3. THE ZERO-TASK PENALTY AND THE ROLE OF n_extra AND sigma_n
+--------------------------------------------------------------------------------
+If the parameter theta enters the zero-task kernel block multiplicatively
+(theta appears in the feature map B, hence theta^2 in the covariance), write
+
+    S_z = theta^2 C + sigma_n^2 I,
+    log|S_z| = sum_i  log(theta^2 lambda_i + sigma_n^2),
+
+where lambda_i are eigenvalues of the data-conditioned latent covariance C, and
+i runs over the n_extra zero-task points. The Occam pull is
+
+    d log|S_z| / dtheta = sum_i  2 theta lambda_i / (theta^2 lambda_i + sigma_n^2)  > 0.
+
+(a) standard -> extra_npoints  (increase n_extra):
+    More zero-task rows => more terms in the sum. In the informative regime
+    log|S_z| ~ 2 n_extra log(theta) + const, i.e. an effective penalty
+    theta^(2 n_extra) that is pushed to be small. The downward pull on theta
+    grows with n_extra.
+
+(b) extra_npoints -> extra_npoints_extra_sigma  (lower sigma_n on zero tasks):
+    sigma_n^2 acts as a THRESHOLD / regularizer. Mode i contributes its full
+    "2 log theta" pull only if theta^2 lambda_i >~ sigma_n^2; if
+    theta^2 lambda_i << sigma_n^2 the term is ~log(sigma_n^2), flat in theta
+    (no pull). Lowering sigma_n moves more modes above threshold ->
+    the full-strength theta^(2 n_extra) Occam bias switches on.
+    => smaller sigma_n = stronger bias  (this is why extra_sigma hurts most).
+
+Note: this is a WEIGHTING/penalty effect, not a conditioning effect. K is
+unchanged between the modes, so the kernel SPECTRUM is essentially identical
+(only the few smallest eigenvalues move). Plotting the spectrum shows ~no
+difference; the effect lives in the parameter-gradient of the log-det, and in
+the relative 1/noise weighting of constraints vs data.
+
+
+--------------------------------------------------------------------------------
+4. WHY IT HURTS PIGP BUT HELPS GT: ORPHANED vs ANCHORED PARAMETER
+--------------------------------------------------------------------------------
+The decisive question is NOT "is the parameter in a zero task" but
+"does the parameter ALSO have a strong data-fit anchor (appear in observed,
+nonzero, high-SNR tasks)?"  Because bias ~ Occam pull / data-fit curvature:
+
+  * Parameter ORPHANED in a zero task  -> tiny data-fit curvature
+       -> Occam pull dominates -> biased; more zero points / smaller sigma_n
+          make it worse.   (PIGP, especially Ex3.)
+
+  * Parameter ANCHORED in observed tasks -> huge data-fit curvature
+       -> Occam pull negligible; extra zero-task points act as extra (correct)
+          physics that sharpens the estimate -> they HELP.   (GT.)
+
+
+--------------------------------------------------------------------------------
+5. EVIDENCE FROM THE ACTUAL KERNELS (where the parameter sits)
+--------------------------------------------------------------------------------
+Ex1 GT  (writing_kernel.py): a appears ONLY in the u DATA task (row 0,
+        "-a*D1*D0 + ..."); the ghost task (row 2) has NO a.
+        => a anchored in data, ghost is parameter-free -> hardening the ghost
+           constraint only cleans up the solution -> GT improves.
+
+Ex1 PIGP: a appears ONLY in the ghost task (row 2, "D0*a"); the data tasks are
+        pure identity [1,0],[0,1] (no a). a is (semi-)orphaned -> Occam term is
+        a large share of its identification -> extra_sigma biases a.
+
+Ex2 GT  : length, g appear in BOTH the observed angle/forcing tasks
+        (rows 0-3 carry "-length^2 D^2 - g length", "length D^2 + g", ...) AND
+        in the ghost task (row 4, "L^2 = length^2 D^4 + 2 g length D^2 + g^2").
+        Parameter is anchored in data -> extra ghost points help despite also
+        appearing in the zero task. (Answers: "GT has params in its zero task
+        too, why does extra_n still help?" -> because they are also in the data
+        tasks.)
+
+Ex3 PIGP: nu0 multiplies the current-density rows Jx,Jy,Jz; the TRUE solution
+        has Jy = Jz = 0 (x-independent field), yet they are still included as
+        zero observations with nu0-scaled prior variance. These are genuinely
+        orphaned zero tasks -> pure -m log(nu0) Occam pull -> nu0 biased LOW.
+        (Ablation "PIGP_changed" removes nu0 from the Jy,Jz rows; that removes
+        exactly this pull -> confirms the mechanism.)
+
+
+--------------------------------------------------------------------------------
+6. WHAT THE FIGURE SHOWS  (graphs/ockhams_razor_mechanism.png)
+--------------------------------------------------------------------------------
+3 rows {GT-Ex2, PIGP-Ex1, PIGP-Ex3} x 2 cols {vary n_extra, vary sigma_n}. Each
+panel plots the two competing forces (data-fit curvature and |Occam pull|),
+evaluated at the TRUE parameter. The bias ~ |Occam pull| / curvature.
+
+Bias ratio (start -> end of each sweep):
+    GT-Ex2   (g)  : n_extra 1.4e-1 -> 1.1e-3 ;  sigma_n 1.3e-3 -> 6.3e-4
+    PIGP-Ex1 (a)  : n_extra 2.3e-1 -> 1.7e-2 ;  sigma_n 1.8e-2 -> 1.3e-2
+    PIGP-Ex3 (nu0): n_extra 4.2e-1 -> 9.4e-1 ;  sigma_n 7.2e-1 -> 1.0e+0
+
+Reading the three regimes:
+
+  GT-Ex2 (ANCHORED): g sits in the observed angle/forcing tasks, so curvature
+     grows steeply with n_extra (~1.8 -> ~219) and dwarfs the Occam pull
+     (~0.005-0.23). Bias -> 0; extra zero-task physics HELPS.
+
+  PIGP-Ex1 (SEMI-ANCHORED): a sits only in the ghost constraint, but that
+     constraint couples the OBSERVED u,v, which still supply curvature
+     (~270 >> pull ~3.6). The Occam pull grows with n_extra and SATURATES as
+     sigma_n -> 0 (threshold effect, ~2.94 -> ~3.6), but curvature keeps it in
+     check, so the net bias stays modest. Matches the tables (extra_npoints
+     ~neutral; extra_sigma only mildly worse).
+
+  PIGP-Ex3 (ORPHANED): nu0 multiplies Jx (informative, fixed anchor) AND the
+     identically-zero Jy,Jz. Adding Jy,Jz points (n_extra) or hardening their
+     noise (sigma_n -> 0) grows the Occam pull with NO matching curvature, so it
+     OVERTAKES the fixed Jx curvature: bias ratio climbs 0.42 -> 0.94 with
+     n_extra and 0.72 -> 1.03 as sigma_n -> 0. This is the clean Occam-dominated
+     regime that produces the observed nu0 ~ 0.63-0.68 (true 1.0).
+
+Takeaway visible at a glance: the two forces stay curvature-dominated when the
+parameter is anchored in data (GT, and partly PIGP-Ex1), and become Occam-
+dominated only when the parameter is orphaned in genuinely zero-signal tasks
+(PIGP-Ex3) -- exactly where adding zero-task points / lowering their noise hurts.
+
+
+--------------------------------------------------------------------------------
+7. TAKEAWAYS / DESIGN PRINCIPLES
+--------------------------------------------------------------------------------
+- The Occam (log-determinant) term silently shrinks any parameter that scales
+  the prior variance of a low/zero-signal task.
+- It is harmful only when the parameter is ORPHANED in such a task (no data-fit
+  anchor). Then more zero-task points and (especially) smaller zero-task noise
+  amplify the bias.
+- Put inferred parameters in OBSERVED dynamics (data tasks), not isolated in
+  zero/ghost constraints. GT does this; PIGP (Ex1, Ex3) does not.
+- Do NOT include identically-zero physical components (e.g. Jy, Jz in Ex3) as
+  separate parameter-scaled tasks.
+- Be cautious lowering ghost-task noise (extra_sigma): it un-regularizes the
+  Occam penalty. For GT (anchored, parameter-free ghost) it helps; for PIGP
+  (orphaned parameter) it hurts.
+- Kernel spectra do NOT reveal this: K is unchanged across modes. The effect is
+  in the parameter-gradient of the log-determinant and in constraint weighting,
+  not in conditioning.
+================================================================================

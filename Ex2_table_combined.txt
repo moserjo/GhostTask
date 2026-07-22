@@ -1,0 +1,73 @@
+% Requires \usepackage{booktabs}, \usepackage{siunitx} and \usepackage{graphicx} (for \resizebox) in the preamble.
+\begin{table}[]
+\sisetup{round-mode=figures, round-precision=2, scientific-notation=true, detect-weight=true, detect-shape=true, detect-family=true}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{llcccc}
+\toprule
+$\frac{\Delta \ell}{\ell}/\frac{\Delta g}{g}/\frac{\Delta \ell/g}{\ell/g}$ & & \multicolumn{3}{c}{\textbf{GT}} & \multicolumn{1}{c}{PIGP} \\
+\cmidrule(lr){3-5} \cmidrule(lr){6-6}
+n & $\sigma$ & standard & extra\_n & extra\_n+$\sigma$ & standard \\
+\midrule
+3 & 0.001 & \num{0.419879}/\num{0.155648}/\num{0.29752} & \multicolumn{2}{c}{{\bfseries \num{0.106391}}/{\bfseries \num{0.100256}}/{\bfseries \num{5.8774e-07}}} & \num{0.727404}/\num{0.934939}/\num{3.18265} \\
+3 & 0.01 & \num{0.417323}/\num{0.15897}/\num{0.296568} & \num{0.0906705}/{\bfseries \num{0.0885554}}/\num{0.000654665} & {\bfseries \num{0.0901076}}/\num{0.0886338}/{\bfseries \num{0.000649118}} & \num{0.725204}/\num{0.934991}/\num{3.21475} \\
+3 & 0.1 & \num{0.557398}/{\bfseries \num{0.188985}}/\num{0.302323} & \num{0.398641}/\num{0.398801}/{\bfseries \num{0.000177814}} & {\bfseries \num{0.393154}}/\num{0.393044}/\num{0.000264341} & \num{0.594298}/\num{0.920179}/\num{4.08441} \\
+3 & 0.2 & \num{0.573442}/{\bfseries \num{0.165637}}/\num{0.34986} & \num{0.449349}/\num{0.443913}/\num{0.00977637} & {\bfseries \num{0.441631}}/\num{0.436324}/{\bfseries \num{0.00938392}} & \num{0.486262}/\num{0.907452}/\num{4.55097} \\
+\addlinespace
+5 & 0.001 & \num{0.498102}/\num{0.419069}/\num{0.0337396} & \multicolumn{2}{c}{{\bfseries \num{0.0854762}}/{\bfseries \num{0.0927256}}/{\bfseries \num{1.11031e-06}}} & \num{0.549891}/\num{0.481638}/\num{0.131744} \\
+5 & 0.01 & \num{0.623461}/\num{0.641303}/\num{0.042703} & \num{0.0777559}/\num{0.0802281}/\num{0.000481584} & {\bfseries \num{0.0766217}}/{\bfseries \num{0.0790716}}/{\bfseries \num{0.000474615}} & \num{0.560985}/\num{0.493332}/\num{0.133287} \\
+5 & 0.1 & \num{0.662872}/\num{0.7104}/\num{0.164114} & \num{0.647795}/\num{0.646702}/{\bfseries \num{0.00309229}} & {\bfseries \num{0.57963}}/{\itshape \num{0.578081}}/\num{0.00367598} & \num{0.596415}/{\bfseries \num{0.533247}}/\num{0.13534} \\
+5 & 0.2 & \num{0.677542}/\num{0.738759}/\num{0.234371} & \num{0.664469}/\num{0.665235}/\num{0.00229362} & {\itshape \num{0.613033}}/{\itshape \num{0.612937}}/{\bfseries \num{0.000248515}} & {\bfseries \num{0.589992}}/{\bfseries \num{0.542913}}/\num{0.103002} \\
+\addlinespace
+10 & 0.001 & \num{0.00510173}/\num{0.00513584}/\num{2.71814e-05} & \multicolumn{2}{c}{{\itshape \num{0.00211862}}/{\itshape \num{0.00211143}}/{\bfseries \num{1.08189e-05}}} & {\bfseries \num{0.000180534}}/{\bfseries \num{0.000139503}}/\num{3.80022e-05} \\
+10 & 0.01 & \num{0.000448891}/\num{0.000644496}/{\bfseries \num{0.000195477}} & {\bfseries \num{2.1688e-05}}/{\bfseries \num{0.000529163}}/\num{0.000539401} & \num{0.000508645}/\num{0.00108331}/\num{0.00057404} & \num{0.001365}/\num{0.00210783}/\num{0.000747753} \\
+10 & 0.1 & \num{0.0794625}/\num{0.0762385}/{\itshape \num{0.00349011}} & \num{0.0621931}/\num{0.0676089}/\num{0.00580856} & {\bfseries \num{0.0506593}}/{\bfseries \num{0.0549877}}/\num{0.00458022} & \num{0.0584202}/\num{0.0553635}/{\bfseries \num{0.00323598}} \\
+10 & 0.2 & \num{0.154485}/\num{0.141197}/\num{0.0154728} & \num{0.142133}/\num{0.136607}/{\bfseries \num{0.00640037}} & {\bfseries \num{0.115674}}/{\bfseries \num{0.108665}}/\num{0.00786307} & \num{0.194229}/\num{0.188332}/\num{0.00726493} \\
+\addlinespace
+25 & 0.001 & \multicolumn{3}{c}{{\itshape \num{7.66157e-06}}/{\itshape \num{8.62406e-06}}/{\itshape \num{1.09074e-06}}} & {\bfseries \num{6.62988e-06}}/{\bfseries \num{6.36938e-06}}/{\bfseries \num{2.60499e-07}} \\
+25 & 0.01 & {\bfseries \num{0.00012975}}/{\bfseries \num{0.000237553}}/{\bfseries \num{0.000107829}} & \num{0.00377435}/\num{0.00351801}/\num{0.000257244} & \num{0.0032435}/\num{0.00295662}/\num{0.000287724} & \num{0.000160753}/\num{0.000480738}/\num{0.000635299} \\
+25 & 0.1 & {\bfseries \num{0.0259922}}/\num{0.028505}/\num{0.00258656} & \num{0.0399283}/\num{0.0392654}/\num{0.000691376} & \num{0.0262048}/{\bfseries \num{0.0259022}}/{\bfseries \num{0.000311309}} & \num{0.0703354}/\num{0.0649841}/\num{0.00572332} \\
+25 & 0.2 & \num{0.173232}/\num{0.177489}/{\itshape \num{0.00517576}} & \num{0.144733}/\num{0.138101}/\num{0.00769384} & {\itshape \num{0.13461}}/{\itshape \num{0.126772}}/\num{0.00897524} & {\bfseries \num{0.114103}}/{\bfseries \num{0.116851}}/{\bfseries \num{0.00311129}} \\
+\midrule
+\multicolumn{2}{l}{\textbf{overall}} & \num{0.0486445}/\num{0.0398439}/\num{0.00790745} & {\bfseries \num{0.0295365}}/\num{0.0361589}/\num{0.000270495} & \num{0.0331669}/{\bfseries \num{0.0347543}}/{\bfseries \num{0.000235475}} & \num{0.0459557}/\num{0.0527368}/\num{0.0176862} \\
+\bottomrule
+\end{tabular}%
+}
+\caption{Relative errors (each cell: $\frac{\Delta \ell}{\ell}$ / $\frac{\Delta g}{g}$ / $\frac{\Delta \ell/g}{\ell/g}$)}
+\end{table}
+
+% Requires \usepackage{booktabs}, \usepackage{siunitx} and \usepackage{graphicx} (for \resizebox) in the preamble.
+\begin{table}[]
+\sisetup{round-mode=figures, round-precision=2, scientific-notation=true, detect-weight=true, detect-shape=true, detect-family=true}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{llcccc}
+\toprule
+$\frac{\Delta \ell}{\ell}/\frac{\Delta g}{g}/\frac{\Delta \ell/g}{\ell/g}$ & & \multicolumn{2}{c}{\textbf{GT}} & \multicolumn{2}{c}{PIGP} \\
+\cmidrule(lr){3-4} \cmidrule(lr){5-6}
+n & $\sigma$ & known\_u & known\_u+$\sigma$ & known\_u & known\_u+$\sigma$ \\
+\midrule
+3 & 0.001 & \multicolumn{2}{c}{{\bfseries \num{5.65097e-06}}/{\bfseries \num{5.2645e-06}}/{\bfseries \num{3.86461e-07}}} & \multicolumn{2}{c}{{\itshape \num{0.000351322}}/{\itshape \num{0.000331705}}/{\itshape \num{1.96239e-05}}} \\
+3 & 0.01 & \num{0.01006}/\num{0.0100199}/\num{4.04488e-05} & {\bfseries \num{0.00878561}}/{\bfseries \num{0.00874985}}/{\bfseries \num{3.60778e-05}} & {\itshape \num{0.0297052}}/{\itshape \num{0.0284704}}/{\itshape \num{0.00127122}} & \num{0.031125}/\num{0.0298826}/\num{0.00128104} \\
+3 & 0.1 & {\bfseries \num{0.0568105}}/{\bfseries \num{0.0598304}}/\num{0.00321203} & \num{0.060553}/\num{0.0612767}/{\bfseries \num{0.000818242}} & {\itshape \num{0.364838}}/{\itshape \num{0.337701}}/\num{0.0409756} & \num{0.372511}/\num{0.346212}/{\itshape \num{0.0402307}} \\
+3 & 0.2 & \num{0.139753}/\num{0.154029}/\num{0.0168132} & {\bfseries \num{0.133592}}/{\bfseries \num{0.140198}}/{\bfseries \num{0.00806447}} & {\itshape \num{0.42298}}/{\itshape \num{0.40063}}/\num{0.0372914} & \num{0.432525}/\num{0.411646}/{\itshape \num{0.0355303}} \\
+\addlinespace
+5 & 0.001 & \multicolumn{2}{c}{{\bfseries \num{5.91148e-06}}/{\bfseries \num{4.66897e-06}}/{\bfseries \num{1.24252e-06}}} & \multicolumn{2}{c}{{\itshape \num{3.23948e-05}}/{\itshape \num{3.00069e-05}}/{\itshape \num{2.38798e-06}}} \\
+5 & 0.01 & \num{0.000603997}/\num{0.0011558}/\num{0.000552441} & {\bfseries \num{7.00344e-05}}/{\bfseries \num{0.000471109}}/{\itshape \num{0.000540863}} & \num{0.00328281}/\num{0.00330042}/{\bfseries \num{1.75528e-05}} & {\itshape \num{0.00311666}}/{\itshape \num{0.0031489}}/\num{3.21415e-05} \\
+5 & 0.1 & \num{0.115359}/\num{0.110648}/{\bfseries \num{0.00529774}} & {\bfseries \num{0.10427}}/{\bfseries \num{0.099079}}/\num{0.00576214} & {\itshape \num{0.15107}}/{\itshape \num{0.14361}}/{\itshape \num{0.00871167}} & \num{0.167109}/\num{0.15816}/\num{0.0106306} \\
+5 & 0.2 & \num{0.271072}/\num{0.245782}/\num{0.0335308} & {\bfseries \num{0.256298}}/{\bfseries \num{0.232207}}/{\itshape \num{0.0313769}} & {\itshape \num{0.267365}}/{\itshape \num{0.247402}}/{\bfseries \num{0.0265265}} & \num{0.329073}/\num{0.304955}/\num{0.0346994} \\
+\addlinespace
+10 & 0.001 & \multicolumn{2}{c}{{\itshape \num{1.76379e-05}}/{\itshape \num{1.94481e-05}}/{\itshape \num{1.47817e-06}}} & \multicolumn{2}{c}{{\bfseries \num{1.45296e-05}}/{\bfseries \num{1.38518e-05}}/{\bfseries \num{6.77837e-07}}} \\
+10 & 0.01 & \num{0.0019029}/\num{0.00214708}/\num{0.000243663} & {\bfseries \num{0.00126843}}/{\bfseries \num{0.00135443}}/{\bfseries \num{8.58909e-05}} & {\itshape \num{0.00208581}}/{\itshape \num{0.00148452}}/{\itshape \num{0.000602179}} & \num{0.00233502}/\num{0.00172405}/\num{0.000612027} \\
+10 & 0.1 & \num{0.0879944}/\num{0.0870455}/{\bfseries \num{0.00104109}} & {\bfseries \num{0.0814539}}/{\bfseries \num{0.0803534}}/\num{0.00119666} & {\itshape \num{0.123901}}/{\itshape \num{0.118734}}/{\itshape \num{0.00586332}} & \num{0.145788}/\num{0.139932}/\num{0.00680858} \\
+10 & 0.2 & \num{0.157381}/\num{0.153608}/\num{0.00445779} & {\bfseries \num{0.13105}}/{\bfseries \num{0.128133}}/{\itshape \num{0.003328}} & {\itshape \num{0.154697}}/{\itshape \num{0.157265}}/\num{0.00304682} & \num{0.210603}/\num{0.211519}/{\bfseries \num{0.00116202}} \\
+\addlinespace
+25 & 0.001 & \multicolumn{2}{c}{{\itshape \num{7.66157e-06}}/{\itshape \num{8.62406e-06}}/{\itshape \num{1.09074e-06}}} & \multicolumn{2}{c}{{\bfseries \num{6.62988e-06}}/{\bfseries \num{6.36938e-06}}/{\bfseries \num{2.60499e-07}}} \\
+25 & 0.01 & {\bfseries \num{0.00176642}}/{\bfseries \num{0.00118601}}/\num{0.000581097} & \num{0.00291433}/\num{0.00253293}/{\itshape \num{0.000382376}} & {\itshape \num{0.00185256}}/{\itshape \num{0.00191878}}/\num{6.66326e-05} & \num{0.00195298}/\num{0.00201494}/{\bfseries \num{6.2317e-05}} \\
+25 & 0.1 & {\bfseries \num{0.00301609}}/{\bfseries \num{0.00292899}}/{\bfseries \num{8.61248e-05}} & \num{0.00860879}/\num{0.0107334}/\num{0.00210208} & {\itshape \num{0.0510492}}/{\itshape \num{0.0518049}}/\num{0.000797011} & \num{0.0653395}/\num{0.0656789}/{\itshape \num{0.000381643}} \\
+25 & 0.2 & \num{0.0703177}/\num{0.0758408}/\num{0.0059747} & {\bfseries \num{0.0468005}}/{\bfseries \num{0.0515889}}/{\bfseries \num{0.00512223}} & {\itshape \num{0.146709}}/{\itshape \num{0.136023}}/{\itshape \num{0.012369}} & \num{0.18111}/\num{0.169978}/\num{0.0134126} \\
+\midrule
+\multicolumn{2}{l}{\textbf{overall}} & \num{0.00308477}/\num{0.00314261}/\num{0.000228728} & {\bfseries \num{0.00273048}}/{\bfseries \num{0.00308032}}/{\bfseries \num{0.000217662}} & {\itshape \num{0.0081374}}/{\itshape \num{0.0076871}}/\num{0.000401758} & \num{0.00890414}/\num{0.00843122}/{\itshape \num{0.000389226}} \\
+\bottomrule
+\end{tabular}%
+}
+\caption{Relative errors, known $u$ (each cell: $\frac{\Delta \ell}{\ell}$ / $\frac{\Delta g}{g}$ / $\frac{\Delta \ell/g}{\ell/g}$)}
+\end{table}

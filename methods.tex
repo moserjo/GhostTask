@@ -1,0 +1,253 @@
+% =====================================================================
+%  Methods section -- Ghost Tasking for physics-consistent Gaussian
+%  processes.  Drop-in LaTeX; requires amsmath, amssymb, bm.
+%  Figure placeholders are described in comments -- no figures included.
+% =====================================================================
+
+\section{Methods}
+\label{sec:methods}
+
+\subsection{General framework}
+\label{sec:framework}
+
+We model each problem with a multi-output Gaussian process (GP) whose
+covariance is constructed so that every sample path satisfies the
+governing linear (system of) differential equation(s) exactly.  Let
+$L$ denote a matrix of linear differential operators with
+(possibly unknown) constant or polynomial coefficients, acting on a
+vector of latent fields, and write the homogeneous constraint as
+$L\,\bm{u}=\bm{0}$.  Following the parametrization approach to
+physics-consistent GPs (PCGP)~\cite{XXX_PCGP}, we seek a matrix of
+operators $B$ that \emph{parametrizes} the solution space, i.e.
+\begin{equation}
+  L\,B \;=\; \bm{0},
+  \qquad
+  \bm{u} \;=\; B\,g ,
+  \label{eq:parametrization}
+\end{equation}
+so that for \emph{any} scalar (or low-dimensional) latent function $g$
+the field $\bm{u}=Bg$ is an exact solution.  Placing a GP prior on $g$
+with base kernel $k_\theta$ (a squared-exponential kernel with
+amplitude and length scale $\theta$ throughout) induces a matrix-valued
+covariance on the tasks,
+\begin{equation}
+  K(\bm{x},\bm{x}')
+  \;=\;
+  B_{\bm{x}}\,k_\theta(\bm{x},\bm{x}')\,B_{\bm{x}'}^{\!\top},
+  \label{eq:matrix-kernel}
+\end{equation}
+where $B_{\bm{x}}$ applies the operators in $B$ in the argument $\bm{x}$.
+The parametrization $B$ is obtained as a syzygy of $L$ in the Weyl
+algebra and is computed symbolically once per problem in
+\textsc{Macaulay2}~\cite{XXX_M2}; the resulting closed-form entries of
+$K$ are exported to a \textsc{GpyTorch} kernel.  Boundary/initial
+conditions, source terms and field observations enter as additional
+\emph{tasks} (rows of $B$), evaluated at their respective input
+locations.
+
+\paragraph{Ghost Tasking (GT).}
+The contribution of this work is to extend the parametrization
+\eqref{eq:parametrization} from homogeneous problems to inhomogeneous
+ones, and to gauge/constraint handling, by augmenting the operator
+$L$ with additional columns---\emph{ghost tasks}---before computing the
+syzygy.  Concretely we form $\tilde L=[\,L\mid C\,]$, where the columns
+$C$ encode the inhomogeneity (a source term) or an auxiliary constraint
+(e.g.\ a gauge), and compute the parametrization $\tilde B$ of
+$\tilde L$.  The ghost tasks let the latent process generate both the
+solution and its source/constraint \emph{consistently}, so the
+inhomogeneous relation holds exactly for every $g$ rather than being
+imposed only at the data.  This (i) reduces the number of independent
+latent processes, (ii) embeds the source/gauge in the kernel, and
+(iii) improves the conditioning of $K$ (Sec.~\ref{sec:ex3}).
+
+\paragraph{Comparison: physics-informed GP (PIGP).}
+We benchmark GT against the physics-informed parametrization used in
+prior work~\cite{XXX_PIGP}, in which the latent process \emph{is} the
+solution (the leading block of $B$ is the identity) and the operator
+image $L\bm{u}$ is appended as extra tasks whose targets are the
+observed source terms.  In PIGP the physics is therefore enforced
+\emph{through the data} (residual tasks driven to the source values),
+whereas in GT it is built into the kernel structure.  Both methods use
+the identical base kernel, training procedure and data, so differences
+in accuracy, parameter recovery and conditioning are attributable to
+the parametrization alone.
+
+\paragraph{Training and inference.}
+Given data $\bm{y}$ at inputs $X$ with a fixed-variance Gaussian
+likelihood (homoscedastic noise $\sigma^2$, exact constraints assigned a
+negligible jitter), the kernel and physical parameters are obtained by
+maximizing the exact marginal log-likelihood with the Adam optimizer
+(learning rate $0.1$, $500$ iterations).  Forward problems predict the
+fields and derived quantities at test locations from initial/boundary
+data and known sources; inverse problems additionally treat the
+physical parameter(s) as trainable and recover them from noisy
+observations.  Posterior uncertainty on the recovered parameters is
+quantified by a Laplace approximation about the maximum-a-posteriori
+estimate (the Hessian of the negative log-likelihood).  As a
+ground-truth reference for the inverse problems we evaluate the exact
+(brute-force) marginal likelihood on a dense grid of the physical
+parameter(s), against which both the point estimates and the Laplace
+covariance are validated.  Accuracy is reported as the (R)MSE between
+the posterior mean and the analytic solution on a held-out test grid,
+together with the recovered parameter values, their Laplace
+uncertainties and the wall-clock training time.
+
+% ---------------------------------------------------------------------
+\subsection{Experiment 1: pedagogical coupled transport system}
+\label{sec:ex1}
+
+As a controlled, low-dimensional illustration we consider a coupled
+first-order linear system for $(u,v)$ on $(x,t)\in[0,1]^2$,
+\begin{equation}
+  \bigl(x\,\partial_x+\partial_t\bigr)u + a\,\partial_x v = 0,
+  \qquad
+  \bigl(x\,\partial_x+\partial_t\bigr)v = 0,
+  \label{eq:ex1-pde}
+\end{equation}
+with operator matrix
+$L=\bigl[\begin{smallmatrix} x\partial_x+\partial_t & a\,\partial_x\\
+0 & x\partial_x+\partial_t\end{smallmatrix}\bigr]$ and scalar coupling
+parameter $a$.  The system admits the closed-form solution
+$v(x,t)=v_0(x e^{-t})$,
+$u(x,t)=u_0(x e^{-t})-a\,(1-e^{-t})\,v_0'(x e^{-t})$,
+which we use to generate data and to evaluate errors; here
+$u_0\equiv0$, $v_0(x)=3\sin(2x)$ and the true value is $a=2$.
+
+The GT parametrization is the single-column syzygy of $L$ (one latent
+process, three tasks $u,v$ and the homogeneous constraint); the ghost
+variant augments $L$ with a source column to handle the inhomogeneous
+case.  The PIGP parametrization uses two latent processes and appends
+the two PDE residuals as tasks (four tasks total).  Training data lie on
+$n\times n$ grids with $n\in\{10,15\}$; the inverse problem is solved at
+noise levels $\sigma\in\{0.001,0.01,0.1,0.2\}$, recovering $a$.  Because
+the problem is two-dimensional we can compute the exact posterior over
+$a$ on a fine grid, providing an unambiguous reference for the
+GT/PIGP point estimates and Laplace uncertainties.
+
+\paragraph{Suggested figures.}
+\begin{itemize}
+  \item \textbf{Fig.~1 (forward solution).} Side-by-side surface/contour
+        plots of the GT and PIGP posterior mean for $u$ and $v$ over
+        $(x,t)$, with the analytic solution and the pointwise error;
+        overlay training points. Demonstrates exact constraint
+        satisfaction and the effect of the extrapolation point.
+  \item \textbf{Fig.~2 (parameter recovery).} The exact 1-D posterior
+        over $a$ (grid evaluation) overlaid with the GT and PIGP MAP
+        estimate $\pm$ Laplace standard deviation, for the four noise
+        levels (small multiples). Shows calibration of the Laplace
+        approximation.
+  \item \textbf{Fig.~3 (accuracy vs.\ noise).} Test RMSE and
+        $|\hat a-a|$ as a function of $\sigma$ for both methods and both
+        grid sizes (line plot with markers).
+\end{itemize}
+
+% ---------------------------------------------------------------------
+\subsection{Experiment 2: forced triple pendulum (boundary-value problem)}
+\label{sec:ex2}
+
+We next consider three identical linear pendula of length $\ell$ under
+gravity $g$, driven by a common but unknown forcing $u(t)$,
+\begin{equation}
+  \ell\,\ddot\theta_i(t) + g\,\theta_i(t) = u(t),
+  \qquad i=1,2,3,
+  \label{eq:ex2-ode}
+\end{equation}
+on $t\in[0,t_1]$ with two-point boundary conditions
+$\theta_i(0),\theta_i(t_1)$ prescribed.  The operator acts on
+$(\theta_1,\theta_2,\theta_3,u)$ as
+$L=\bigl[(\ell\partial_t^2+g)\,I_3 \mid -\bm{1}\bigr]$, coupling the
+three trajectories through the shared drive $u$.  The true parameters
+are $g=9.81$ and $\ell=2.5$; data are generated from the analytic
+modal solution of \eqref{eq:ex2-ode} (sinusoidal drive
+$u(t)=A\sin(\omega_u t)$).
+
+The GT parametrization (one latent process; tasks
+$\theta_1,\theta_2,\theta_3,u$ plus a ghost task) augments $L$ with a
+forcing column $[\,\ell,\ \ell\partial_t,\ \ell t\,]^{\top}$, so the
+common drive is generated consistently with the trajectories.  PIGP uses
+three latent processes and appends the three equation residuals as
+tasks.  Only sparse boundary observations of $\theta_i$ (at $t=0,t_1$)
+and samples of the drive are provided.  We study sample sizes
+$n\in\{3,5,10,25\}$ and noise levels
+$\sigma\in\{0,0.01,0.1,0.2\}$, and jointly recover $(g,\ell)$.
+
+\paragraph{Suggested figures.}
+\begin{itemize}
+  \item \textbf{Fig.~4 (reconstructed dynamics).} The three trajectories
+        $\theta_1,\theta_2,\theta_3$ and the inferred forcing $u(t)$ over
+        $[0,t_1]$: GT and PIGP posterior mean with credible band,
+        analytic solution, boundary/observation points. Highlights
+        reconstruction of the latent drive from boundary data.
+  \item \textbf{Fig.~5 (joint parameter posterior).} 2-D contour of the
+        exact $(g,\ell)$ likelihood from the grid evaluation, with GT and
+        PIGP MAP estimates and Laplace covariance ellipses overlaid.
+  \item \textbf{Fig.~6 (data-efficiency).} Test RMSE and parameter error
+        vs.\ $n$ (and vs.\ $\sigma$) for GT and PIGP, illustrating
+        robustness in the data-scarce regime.
+\end{itemize}
+
+% ---------------------------------------------------------------------
+\subsection{Experiment 3: 3-D magnetostatics with spatially varying
+            reluctivity}
+\label{sec:ex3}
+
+The final, most demanding example is 3-D magnetostatics in the
+vector-potential formulation,
+\begin{equation}
+  \nabla\times\!\bigl(\nu\,\nabla\times\bm{A}\bigr) = \bm{J},
+  \qquad
+  \bm{B}=\nabla\times\bm{A},
+  \label{eq:ex3-pde}
+\end{equation}
+on $\Omega=[0,1]^2\times[1,2]$ with a spatially varying, anisotropic
+reluctivity tensor $\nu=\mathrm{diag}(\nu_0,\nu_0,z)$ and Dirichlet
+conditions $\bm{A}=\bm{0}$ on the domain faces.  The operator
+$L=\mathrm{curl}\,\nu\,\mathrm{curl}$ acts on $\bm{A}=(A_1,A_2,A_3)$;
+because $L$ has a non-trivial null space (gradient fields), a gauge
+condition must be supplied.  A manufactured analytic solution with the
+corresponding source $\bm{J}$ is used as ground truth, and the unknown
+scalar reluctivity $\nu_0$ ($\nu_0=1$) is recovered in the inverse
+setting.
+
+The GT parametrization augments $L$ with a source column and a gauge
+\emph{ghost task}, yielding a single-latent-process kernel whose
+sample paths satisfy both \eqref{eq:ex3-pde} and the gauge exactly; the
+tasks are the three components of $\bm{A}$, the source $J_x$, the gauge
+(target $0$) and the three components of $\bm{B}$.  PIGP instead models
+$\bm{A}$ directly and appends the three components of $L\bm{A}$ as
+residual tasks driven to $(J_x,0,0)$, together with the curl tasks for
+$\bm{B}$.  Forward runs use boundary points on the faces plus the source
+on an $n^3$ grid ($n=6$); inverse runs recover $\nu_0$ from noisy
+field and source measurements over $n\in\{3,5,6,10\}$ and
+$\sigma\in\{0.001,0.01,0.1,0.2\}$, with several random restarts.  This
+example also exposes the conditioning advantage of GT: because the gauge
+and source are absorbed into the kernel, the spectrum of $K$ decays more
+slowly than for PIGP, which we report directly.
+
+\paragraph{Suggested figures.}
+\begin{itemize}
+  \item \textbf{Fig.~7 (field reconstruction).} Slices (or quiver/stream
+        plots) of the predicted $\bm{B}$ field on representative planes
+        in $\Omega$ for GT and PIGP, with the analytic field and the
+        pointwise error. Shows divergence-free, gauge-consistent
+        reconstruction.
+  \item \textbf{Fig.~8 (conditioning).} Sorted eigenvalue spectrum of the
+        training covariance $K$ (log scale) for GT vs.\ PIGP at fixed
+        grid/noise. Central evidence that the ghost-task kernel is
+        better conditioned.
+  \item \textbf{Fig.~9 (inverse $\nu_0$).} Recovered $\nu_0$ with Laplace
+        uncertainty vs.\ noise level (and vs.\ $n$), GT vs.\ PIGP,
+        against the exact grid posterior; include a box/violin over
+        random restarts.
+  \item \textbf{Fig.~10 (cost vs.\ accuracy).} Test RMSE vs.\ training
+        time (or vs.\ number of tasks/latent processes) for GT and PIGP,
+        summarizing the efficiency gain.
+\end{itemize}
+
+% ---------------------------------------------------------------------
+\subsection{Implementation}
+All models are implemented in \textsc{GpyTorch}/\textsc{PyTorch} in
+double precision; symbolic parametrizations are derived with
+\textsc{SymPy} and the syzygies with \textsc{Macaulay2}.  Code and the
+data-generation scripts for all three experiments are available
+in the accompanying repository~\cite{XXX_repo}.

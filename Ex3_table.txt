@@ -1,0 +1,28 @@
+% Requires \usepackage{booktabs} and \usepackage{siunitx} in the preamble.
+\begin{table}[]
+\sisetup{round-mode=figures, round-precision=2, scientific-notation=true, table-format=1.2e-1, detect-weight=true, detect-shape=true, detect-family=true}
+\begin{tabular}{llSSSSSS}
+\toprule
+{$\frac{\Delta \nu_0}{\nu_0}$} & & \multicolumn{3}{c}{\textbf{GT}} & \multicolumn{3}{c}{PIGP} \\
+\cmidrule(lr){3-5} \cmidrule(lr){6-8}
+n & {$\sigma$} & {standard} & {extra\_n} & {extra\_n+$\sigma$} & {standard} & {extra\_n} & {extra\_n+$\sigma$} \\
+\midrule
+3 & 0.001 & 0.102671 & \multicolumn{2}{c}{{\bfseries \num{0.0888339}}} & \itshape 0.18377 & \multicolumn{2}{c}{\num{0.434338}} \\
+3 & 0.01 & 0.127868 & 0.0858549 & \bfseries 0.072775 & \itshape 0.255557 & 0.445276 & 0.442452 \\
+3 & 0.1 & 0.084661 & 0.0699462 & \bfseries 0.0612011 & \itshape 0.327744 & 0.470262 & 0.470536 \\
+3 & 0.2 & 0.0765037 & 0.0728248 & \bfseries 0.0628138 & \itshape 0.362775 & 0.49282 & 0.501885 \\
+\addlinespace
+5 & 0.001 & 0.0622279 & \multicolumn{2}{c}{{\bfseries \num{0.0609111}}} & \itshape 0.303653 & \multicolumn{2}{c}{\num{0.373479}} \\
+5 & 0.01 & \bfseries 0.000644172 & 0.000697731 & 0.000743384 & 0.359144 & 0.360976 & \itshape 0.325389 \\
+5 & 0.1 & 0.0033574 & 0.00327329 & \bfseries 0.00286211 & 0.369783 & 0.361486 & \itshape 0.235702 \\
+5 & 0.2 & 0.00707304 & \bfseries 0.00684089 & 0.00715997 & 0.363044 & 0.338972 & \itshape 0.179171 \\
+\addlinespace
+7 & 0.001 & 0.0147629 & \multicolumn{2}{c}{{\bfseries \num{0.0147188}}} & 0.136953 & \multicolumn{2}{c}{{\itshape \num{0.128768}}} \\
+7 & 0.01 & 0.000363754 & 0.000359031 & \bfseries 0.000351187 & 0.200729 & 0.192017 & \itshape 0.151188 \\
+7 & 0.1 & 0.00121461 & 0.00120637 & \bfseries 0.00119711 & 0.310302 & 0.307304 & \itshape 0.224407 \\
+7 & 0.2 & 0.00086215 & 0.00086531 & \bfseries 0.000549089 & 0.324353 & 0.319081 & \itshape 0.152532 \\
+\midrule
+\multicolumn{2}{l}{\textbf{overall}} & 0.00936514 & 0.00875912 & \bfseries 0.00808797 & 0.279387 & 0.332028 & \itshape 0.270755 \\
+\bottomrule
+\end{tabular}
+\end{table}
