@@ -4,8 +4,8 @@
 --
 --   1. transpose(B)*transpose(P) = 0: B is a complete relation matrix;
 --   2. P is recovered from B by a second syzygy calculation;
---   3. P is surjective as a map of free left modules (the stronger
---      unimodular/splitting certificate).
+--   3. the column image of P is full (a diagnostic for the identity
+--      baseline, not the stable-free certificate in the Ghost Tasking proof).
 --
 -- The search is complete only inside the finite operator ansatz supplied by
 -- the caller.  A failed search is therefore a failure of that ansatz, not a
@@ -40,11 +40,11 @@ doubleAnnihilatorCertificate = P -> (
     }
 );
 
--- This is the module-theoretic unimodularity test available in M2's
--- left-module representation.  It is intentionally reported separately
--- from `exact`: exact parametrization alone is weaker than the certificate
--- needed to invoke the stable-free construction.
-surjectivePresentation = P -> (
+-- This is only a column-image diagnostic in M2's left-module representation.
+-- It is intentionally reported separately from `exact`: it is true for the
+-- identity baseline, but it is not the row-module/stable-free condition used
+-- in the Ghost Tasking proof.
+columnImageFull = P -> (
     isSubset(image id_(target P), image P)
 );
 
@@ -58,7 +58,7 @@ checkLambda = (R, Lambda) -> (
         "recoveredP" => certificate#"recoveredP",
         "relationZero" => certificate#"relationZero",
         "exact" => certificate#"exact",
-        "surjective" => surjectivePresentation P
+        "columnImageFull" => columnImageFull P
     }
 );
 
@@ -115,7 +115,7 @@ searchLambda = (R, operators, maxColumns) -> (
             "recoveredP" => found#"recoveredP",
             "relationZero" => found#"relationZero",
             "exact" => found#"exact",
-            "surjective" => found#"surjective"
+            "columnImageFull" => found#"columnImageFull"
         }
     )
 );

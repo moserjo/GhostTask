@@ -17,8 +17,8 @@ checkFound = (label, certificate, expectedColumns) -> (
     assertTrue(label | " exact double-annihilator check", certificate#"exact");
     assertTrue(label | " column count",
         numColumns certificate#"Lambda" == expectedColumns);
-    assertTrue(label | " non-surjective certificate is reported",
-        not certificate#"surjective")
+    assertTrue(label | " column-image diagnostic is distinct",
+        not certificate#"columnImageFull")
 );
 
 -- Experiment 1: two independent first-order operators.
@@ -26,7 +26,7 @@ W1 = QQ[t,x,dt,dx,a, WeylAlgebra => {t=>dt,x=>dx}];
 R1 = matrix{{x*dx+dt,a*dx},{0,x*dx+dt}};
 baseline1 = checkLambda(R1, id_(target R1));
 assertTrue("Experiment 1 identity baseline is exact", baseline1#"exact");
-assertTrue("Experiment 1 identity baseline is surjective", baseline1#"surjective");
+assertTrue("Experiment 1 identity column image is full", baseline1#"columnImageFull");
 assertTrue("Experiment 1 original system is not exact", not (doubleAnnihilatorCertificate R1)#"exact");
 c1 = searchLambda(R1, {0,1,dt}, 1);
 checkFound("Experiment 1", c1, 1);
@@ -42,7 +42,7 @@ R2 = matrix{{dt^2*l+g,0,0,-1},
             {0,0,dt^2*l+g,-1}};
 baseline2 = checkLambda(R2, id_(target R2));
 assertTrue("Experiment 2 identity baseline is exact", baseline2#"exact");
-assertTrue("Experiment 2 identity baseline is surjective", baseline2#"surjective");
+assertTrue("Experiment 2 identity column image is full", baseline2#"columnImageFull");
 c2 = searchLambda(R2, {0,1,dt,t,l,l*dt,l*t}, 1);
 checkFound("Experiment 2", c2, 1);
 assertTrue("Experiment 2 bounded count", c2#"candidateCount" == 343);
@@ -56,7 +56,7 @@ nu = matrix{{nu0,0,0},{0,nu0,0},{0,0,z}};
 R3 = curl*nu*curl | matrix{{0},{0},{-1}};
 baseline3 = checkLambda(R3, id_(target R3));
 assertTrue("Experiment 3 identity baseline is exact", baseline3#"exact");
-assertTrue("Experiment 3 identity baseline is surjective", baseline3#"surjective");
+assertTrue("Experiment 3 identity column image is full", baseline3#"columnImageFull");
 c3 = searchLambda(R3, {0,1,-1}, 1);
 checkFound("Experiment 3", c3, 1);
 assertTrue("Experiment 3 bounded count", c3#"candidateCount" == 27);
