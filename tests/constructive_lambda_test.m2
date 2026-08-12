@@ -43,6 +43,7 @@ R2 = matrix{{dt^2*l+g,0,0,-1},
 baseline2 = checkLambda(R2, id_(target R2));
 assertTrue("Experiment 2 identity baseline is exact", baseline2#"exact");
 assertTrue("Experiment 2 identity column image is full", baseline2#"columnImageFull");
+assertTrue("Experiment 2 original system is not exact", not (doubleAnnihilatorCertificate R2)#"exact");
 c2 = searchLambda(R2, {0,1,dt,t,l,l*dt,l*t}, 1);
 checkFound("Experiment 2", c2, 1);
 assertTrue("Experiment 2 bounded count", c2#"candidateCount" == 343);
@@ -57,6 +58,7 @@ R3 = curl*nu*curl | matrix{{0},{0},{-1}};
 baseline3 = checkLambda(R3, id_(target R3));
 assertTrue("Experiment 3 identity baseline is exact", baseline3#"exact");
 assertTrue("Experiment 3 identity column image is full", baseline3#"columnImageFull");
+assertTrue("Experiment 3 original system is not exact", not (doubleAnnihilatorCertificate R3)#"exact");
 c3 = searchLambda(R3, {0,1,-1}, 1);
 checkFound("Experiment 3", c3, 1);
 assertTrue("Experiment 3 bounded count", c3#"candidateCount" == 27);

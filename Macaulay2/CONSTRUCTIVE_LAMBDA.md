@@ -49,11 +49,11 @@ deliberately not treated as a discovery: it uses `q` augmentation columns and
 is only a control showing that the exact and surjective tests behave as
 expected.  The regression examples find one-column, non-identity candidates.
 
-| example | finite operator list | candidates | tested | columns found | exact | column image full |
-| --- | --- | ---: | ---: | ---: | --- | --- |
-| pedagogical PDE | `0, 1, dt` | 9 | 1 | 1 | yes | no |
-| tripendulum ODE | `0, 1, dt, t, l, l*dt, l*t` | 343 | 10 | 1 | yes | no |
-| magnetostatics PDE | `0, 1, -1` | 27 | 3 | 1 | yes | no |
+| example | finite operator list | candidates | tested | original exact | columns found | augmented exact |
+| --- | --- | ---: | ---: | --- | ---: | --- |
+| pedagogical PDE | `0, 1, dt` | 9 | 1 | no | 1 | yes |
+| tripendulum ODE | `0, 1, dt, t, l, l*dt, l*t` | 343 | 10 | no | 1 | yes |
+| magnetostatics PDE | `0, 1, -1` | 27 | 3 | no | 1 | yes |
 
 The `column image full = no` result is useful evidence, not a failure hidden by
 the test: the sparse candidates are genuinely different from the identity
