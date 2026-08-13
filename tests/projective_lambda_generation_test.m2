@@ -9,15 +9,15 @@ assertTrue = (label, condition) -> (
     print("PASS: " | label)
 );
 
--- The first experiment is generated from span{1, dt} with coefficients
--- {-1,0,1}; the search finds a projective two-column Lambda.
+-- The first experiment is a bounded negative case after the nontriviality
+-- guard is applied. Its small ansatz has projective two-column augmentations,
+-- but they are PIGP-equivalent because the ghost block is invertible.
 W1 = QQ[t,x,dt,dx,a, WeylAlgebra => {t=>dt,x=>dx}];
 R1 = matrix{{x*dx+dt,a*dx},{0,x*dx+dt}};
 space1 = finiteOperatorSpace({1,dt},{-1,0,1});
 g1 = generateProjectiveLambda(R1, space1, 2);
-assertTrue("Experiment 1 generator succeeds", g1#"found");
-assertTrue("Experiment 1 generator is complete in space", g1#"completeWithinSpace");
-assertTrue("Experiment 1 generated Lambda is projective", g1#"proof"#"projective");
+assertTrue("Experiment 1 nontrivial generator correctly fails", not g1#"found");
+assertTrue("Experiment 1 failure is complete in space", g1#"completeWithinSpace");
 
 -- A deliberately too-small finite space gives a bounded negative result,
 -- not a false positive and not an implicit fallback.
@@ -34,6 +34,9 @@ g2 = generateProjectiveLambda(R2, space2, 2);
 assertTrue("Experiment 2 generator succeeds", g2#"found");
 assertTrue("Experiment 2 generator is complete in space", g2#"completeWithinSpace");
 assertTrue("Experiment 2 generated Lambda is projective", g2#"proof"#"projective");
+assertTrue("Experiment 2 generated Lambda is nontrivial",
+    not columnImageFull g2#"Lambda");
+assertTrue("Experiment 2 minimum ghost count is certified", g2#"minimumColumns" == 2);
 
 W3 = QQ[x,y,z,dx,dy,dz,nu0,
     WeylAlgebra => {x=>dx,y=>dy,z=>dz}];
@@ -45,5 +48,8 @@ g3 = generateProjectiveLambda(R3, space3, 2);
 assertTrue("Experiment 3 generator succeeds", g3#"found");
 assertTrue("Experiment 3 generator is complete in space", g3#"completeWithinSpace");
 assertTrue("Experiment 3 generated Lambda is projective", g3#"proof"#"projective");
+assertTrue("Experiment 3 generated Lambda is nontrivial",
+    not columnImageFull g3#"Lambda");
+assertTrue("Experiment 3 minimum ghost count is certified", g3#"minimumColumns" == 2);
 
 print("ALL FINITE-SPACE GENERATION TESTS PASSED");
