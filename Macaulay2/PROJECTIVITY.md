@@ -36,9 +36,19 @@ The three paper systems have positive two-column witnesses in
 `tests/projectivity_proof_test.m2`; the old one-column candidates remain
 rejected by the negative test.
 
+`finiteOperatorSpace(basis, coefficients)` and
+`generateProjectiveLambda(R, operatorSpace, maxColumns)` provide constructive
+generation. The generator enumerates every nonzero one-column candidate and,
+when requested, every two-column candidate from the finite space, invoking the
+positive proof oracle on each. A successful result contains a projectivity
+proof; an unsuccessful result is marked `completeWithinSpace` and is a true
+bounded no-go only for that declared finite space and column bound. There is
+no identity fallback.
+
 Run it from the repository root:
 
 ```bash
 M2 --no-readline tests/projectivity_certificate_test.m2
 M2 --no-readline tests/projectivity_proof_test.m2
+M2 --no-readline tests/projective_lambda_generation_test.m2
 ```
