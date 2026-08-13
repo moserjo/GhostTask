@@ -18,6 +18,23 @@ assertTrue("Experiment 1 ball exclusion is complete", g1#"completeWithinOperator
 assertTrue("identity augmentation is excluded", g1#"identityExcluded");
 assertTrue("PIGP-equivalent augmentation is excluded", g1#"pigpTrivialExcluded");
 
+-- Expanding the first ansatz by the multiplication generator t resolves it.
+g1t = generalProjectiveLambdaSearch(R1, {t}, {-1,0,1}, 1, 2);
+assertTrue("expanded Experiment 1 t-ball finds Lambda", g1t#"found");
+assertTrue("expanded Experiment 1 minimum is one column",
+    g1t#"minimumColumns" == 1);
+assertTrue("expanded Experiment 1 Lambda is projective",
+    g1t#"proof"#"projective");
+assertTrue("expanded Experiment 1 Lambda is nontrivial",
+    not columnImageFull g1t#"Lambda");
+
+all1t = generalProjectiveLambdaSolutions(R1, {t}, {-1,0,1}, 1, 2);
+assertTrue("full expanded Experiment 1 set is found", all1t#"found");
+assertTrue("full expanded Experiment 1 set has eight minima",
+    all1t#"solutionCount" == 8);
+assertTrue("expanded Experiment 1 minima are non-unique",
+    not all1t#"uniqueWithinOperatorBall");
+
 W2 = QQ[t,dt,l,g, WeylAlgebra => {t=>dt}];
 R2 = matrix{{dt^2*l+g,0,0,-1},
             {0,dt^2*l+g,0,-1},
