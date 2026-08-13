@@ -1,5 +1,3 @@
-restart:
-
 with(LinearAlgebra):
 with(Ore_algebra):
 
