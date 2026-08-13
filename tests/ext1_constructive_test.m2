@@ -120,4 +120,53 @@ assertTrue("Ex2 two-column operator-order witness identity",
 assertTrue("Ex2 two-column block is not PIGP-trivial",
     not lambdaIsPIGPTrivial L2two);
 
+----------------------------------------------------------------------
+-- Experiment 3: anisotropic magnetostatics over the Weyl algebra in
+-- x, y, z with reluctivity diag(1, 1, z).
+----------------------------------------------------------------------
+W3 = QQ[x,y,z,dx,dy,dz, WeylAlgebra => {x=>dx,y=>dy,z=>dz}];
+curl = matrix{{0,-dz,dy},{dz,0,-dx},{-dy,dx,0}};
+nu = matrix{{1,0,0},{0,1,0},{0,0,z}};
+R3 = curl*nu*curl | matrix{{0},{0},{-1}};
+
+assertTrue("Ex3 ext^1 nonzero", not ext1IsZero R3);
+assertTrue("Ex3 ext^1 torsion", ext1IsTorsion R3);
+assertTrue("Ex3 ext^1 not holonomic", not ext1IsHolonomic R3);
+assertTrue("Ex3 R3 row injective", gtRowInjective R3);
+
+-- Every entry of R3 is fixed by the involution, so the tau-world and the
+-- operator-order statements coincide literally for this system.
+assertTrue("Ex3 R3 is involution-fixed", Dtransposition R3 == R3);
+
+-- One ghost column suffices: (1, xz, 0) generates ext^1.  This decides
+-- the minimum globally, r = 1, although ext^1 is not holonomic: torsion
+-- non-holonomic modules over A_3 sit exactly in the zone of Stafford's
+-- open cyclicity conjecture, so this is an instance decision by a
+-- terminating Groebner certificate, not a corollary of a general
+-- theorem.  The explicit right inverse is too large to store here; the
+-- cokernel decision is the complete certificate.
+L3one = matrix{{1_W3},{x*z},{0}};
+assertTrue("Ex3 (1,xz,0) generates ext^1",
+    lambdaGeneratesExt1Decision(R3, L3one));
+min3 = new HashTable from {
+    "columns" => 1,
+    "exact" => not ext1IsZero R3 };
+assertTrue("Ex3 minimum r = 1 is exact", min3#"exact");
+
+-- Near misses must fail: the generator is genuinely discriminating.
+assertTrue("Ex3 (1,x,0) rejected",
+    not lambdaGeneratesExt1Decision(R3, matrix{{1_W3},{x},{0}}));
+assertTrue("Ex3 (1,z,0) rejected",
+    not lambdaGeneratesExt1Decision(R3, matrix{{1_W3},{z},{0}}));
+
+-- The two-column blocks from the earlier finite search stay certified,
+-- now with explicit constant witnesses through the J_z source column.
+L3two = matrix{{0_W3,1},{1,0},{0,0}};
+cert3two = lambdaGeneratesExt1(R3, L3two);
+assertTrue("Ex3 two-column sparse block generates", cert3two#"generates");
+assertTrue("Ex3 two-column operator-order witness identity",
+    trueRightInverseHolds(R3 | (-L3two), cert3two#"witness"));
+assertTrue("Ex3 two-column block is not PIGP-trivial",
+    not lambdaIsPIGPTrivial L3two);
+
 print("ALL EXT1 CONSTRUCTIVE TESTS PASSED");

@@ -94,6 +94,14 @@ lambdaGeneratesExt1 = (R, Lambda) -> (
     }
 );
 
+-- Witness-free Groebner decision of the same generation condition.
+-- Useful when the certificate exists but the explicit right inverse is
+-- too large to extract; the cokernel test is a complete decision.
+lambdaGeneratesExt1Decision = (R, Lambda) -> (
+    Pt := gtTau (R | (-Lambda));
+    isSubset(image id_(target Pt), image Pt)
+);
+
 -- Relation module of a generating block: K = { v in D^r : Lambda v in
 -- R D^p } with operator-order products, from the tau-world syzygies of
 -- [Lambda | R].  When Lambda generates, ext^1 = D^r / K on the chosen
