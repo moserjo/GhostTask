@@ -23,8 +23,11 @@ witnessSpace := [0, 1, -1]:
 relationSpace := [0, 1, -1]:
 
 proof_oracle := proc(P)
-    GT_bounded_projectivity_certificate(P, witnessSpace,
-                                        relationSpace, A)
+local c;
+    c := GT_bounded_projectivity_certificate(P, witnessSpace,
+                                             relationSpace, A):
+    table(["projective" = c["projectiveWithinBounds"],
+           "certificate" = c])
 end proc:
 
 nontriviality_oracle := proc(Lambda)

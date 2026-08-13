@@ -235,8 +235,11 @@ local inverse, relations, answer;
     relations := GT_row_relation_search(P, relation_space, alg):
     answer := table():
     answer["rightInverseFound"] := inverse["found"]:
-    answer["rightInverse"] := piecewise(inverse["found"],
-                                         inverse["witness"], NULL):
+    if inverse["found"] then
+        answer["rightInverse"] := inverse["witness"]:
+    else
+        answer["rightInverse"] := false:
+    end if:
     answer["rowInjectiveWithinRelationSpace"] :=
         not relations["relationFound"]:
     answer["projectiveWithinBounds"] :=
