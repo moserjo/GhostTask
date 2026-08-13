@@ -136,23 +136,23 @@ local out, b, c, x;
 end proc:
 
 GT_operator_ball := proc(generators, coefficients, degree, alg)
-local out, frontier, next, g, w, c, x, d;
+local out, frontier, next_frontier, g, w, c, x, d;
     out := GT_finite_operator_space([1], coefficients):
     frontier := [1]:
     for d from 1 to degree do
-        next := []:
+        next_frontier := []:
         for w in frontier do
             for g in generators do
                 x := Ore_algebra:-skew_product(w, g, alg):
-                next := GT_append_unique(next, x):
+                next_frontier := GT_append_unique(next_frontier, x):
             end do:
         end do:
         for c in coefficients do
-            for x in next do
+            for x in next_frontier do
                 out := GT_append_unique(out, expand(c*x)):
             end do:
         end do:
-        frontier := next:
+        frontier := next_frontier:
     end do:
     out
 end proc:
@@ -161,9 +161,10 @@ end proc:
 # must come from an independent syzygy calculation. The procedure never
 # turns a bounded search into a global theorem.
 GT_projectivity_proof_oracle := proc(P, S, alg, row_injective_certificate)
-local I, exact, answer;
-    I := GT_identity_matrix(RowDimension(P)):
-    exact := GT_ore_matrix_equal(GT_ore_matrix_multiply(P, S, alg), I):
+local identity_matrix, exact, answer;
+    identity_matrix := GT_identity_matrix(RowDimension(P)):
+    exact := GT_ore_matrix_equal(
+        GT_ore_matrix_multiply(P, S, alg), identity_matrix):
     answer := table():
     answer["witness"] := S:
     answer["rightInverseIdentity"] := exact:
@@ -199,7 +200,7 @@ end proc:
 # Bounded analogue of the transposed-syzygy check. The finite scope is
 # returned explicitly.
 GT_row_relation_search := proc(P, relation_space, alg)
-local q, n, vectors, out, c, i, j, value;
+local q, n, vectors, out, c, i, j, value, annihilates;
     q := RowDimension(P):
     n := ColumnDimension(P):
     vectors := GT_all_vectors(relation_space, q):
@@ -212,14 +213,16 @@ local q, n, vectors, out, c, i, j, value;
             next
         end if:
         out["tested"] := out["tested"] + 1:
+        annihilates := true:
         for j to n do
             value := add(Ore_algebra:-skew_product(c[i], P[i, j], alg),
                          i = 1 .. q):
             if simplify(expand(value)) <> 0 then
+                annihilates := false:
                 break
             end if:
         end do:
-        if j > n then
+        if annihilates then
             out["relationFound"] := true:
             out["relation"] := c:
             return out
@@ -258,8 +261,9 @@ local c, answer;
                                              relation_space, alg):
     answer := table():
     answer["ruledOutWithinBounds"] :=
-        c["rowInjectiveWithinRelationSpace"]
-        and not c["rightInverseFound"]:
+        not c["rowInjectiveWithinRelationSpace"]
+        or (c["rowInjectiveWithinRelationSpace"]
+            and not c["rightInverseFound"]):
     answer["certificate"] := c:
     answer["scope"] := "bounded rejection only":
     answer
