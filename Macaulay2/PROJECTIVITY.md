@@ -25,8 +25,20 @@ The regression test rules out the one-column candidates from all three paper
 examples. This is a genuine projectivity rejection, not merely failure of the
 parametrization test.
 
+`projectivityProofOracle P` is the corresponding positive oracle. It computes
+the exact factor `S = id_q // P` and accepts it only after checking
+`P*S = id_q` in the original Weyl algebra, together with row injectivity.
+`projectivityProofWithWitness` checks a caller-supplied explicit `S`. Thus a
+positive result contains a machine-checked splitting witness, not a boolean
+surjectivity heuristic.
+
+The three paper systems have positive two-column witnesses in
+`tests/projectivity_proof_test.m2`; the old one-column candidates remain
+rejected by the negative test.
+
 Run it from the repository root:
 
 ```bash
 M2 --no-readline tests/projectivity_certificate_test.m2
+M2 --no-readline tests/projectivity_proof_test.m2
 ```

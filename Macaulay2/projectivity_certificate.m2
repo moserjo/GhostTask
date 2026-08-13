@@ -42,3 +42,38 @@ negativeProjectivityCertificate = P -> (
         "criterion" => "full-row-rank presentation splits iff P has a right inverse"
     }
 );
+
+-- Positive oracle.  A caller may provide an explicit S, or ask Macaulay2
+-- to compute the exact factor I // P.  The returned witness is accepted only
+-- after the identity P*S == id_q is checked in the original Weyl algebra.
+projectivityProofOracle = P -> (
+    injective := rowInjective P;
+    I := id_(target P);
+    witness := I // P;
+    split := witness =!= null and P*witness == I;
+    new HashTable from {
+        "P" => P,
+        "rowInjective" => injective,
+        "witness" => witness,
+        "split" => split,
+        "projective" => injective and split,
+        "proof" => if injective and split then
+            "row-injective presentation plus checked right inverse"
+            else "no projectivity proof returned"
+    }
+);
+
+projectivityProofWithWitness = (P, S) -> (
+    injective := rowInjective P;
+    split := P*S == id_(target P);
+    new HashTable from {
+        "P" => P,
+        "S" => S,
+        "rowInjective" => injective,
+        "split" => split,
+        "projective" => injective and split,
+        "proof" => if injective and split then
+            "explicit right-inverse identity checked over the Weyl algebra"
+            else "supplied witness rejected"
+    }
+);
