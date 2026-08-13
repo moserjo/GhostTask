@@ -79,6 +79,15 @@ that minimum. This is the strongest constructive general search currently
 implemented in Macaulay2; it is not a terminating direct generator from an
 arbitrary Ext module.
 
+For the first paper system, the constant ansatz has no nontrivial projective
+solution after coercion into the Weyl ring. Adding the multiplication generator
+`t` at word length one changes the finite ball to
+`{0, 1, -1, t, -t}`. The minimum becomes one ghost column. The first returned
+solution is `matrix{{-1},{-t}}`, and exhaustive enumeration finds eight literal
+minimal solutions. The result is therefore a constructive resolution of the
+first example in an expanded ansatz, with non-uniqueness recorded rather than
+hidden by returning the first witness.
+
 The official [OreModules documentation](https://who.rocq.inria.fr/Alban.Quadrat/OreModules/package.html)
 provides `Exti`, resolutions, syzygies, and right-inverse routines, and the
 [Stafford package](https://who.rocq.inria.fr/Alban.Quadrat/OreModules/stafford.html)
