@@ -9,6 +9,19 @@
 
 needsPackage "Dmodules";
 
+gtColumnMatrix = entries -> matrix apply(entries, entry -> {entry});
+
+gtAllOperatorVectors = (q, operators) -> (
+    if q == 0 then { { } }
+    else (
+        tails := gtAllOperatorVectors(q - 1, operators);
+        flatten apply(operators, operator ->
+            apply(tails, tail -> prepend(operator, tail)))
+    )
+);
+
+gtIsZeroColumn = entries -> (# select(entries, entry -> entry != 0) == 0);
+
 rowInjective = P -> (
     -- D-transposition converts left row relations into the right syzygy
     -- convention used by Macaulay2.
@@ -75,5 +88,80 @@ projectivityProofWithWitness = (P, S) -> (
         "proof" => if injective and split then
             "explicit right-inverse identity checked over the Weyl algebra"
             else "supplied witness rejected"
+    }
+);
+
+-- Turn a finite basis and finite coefficient alphabet into an explicit finite
+-- operator space.  This is intentionally finite: an operator space over a
+-- field has infinitely many coefficients, so exhaustive generation requires
+-- the coefficient alphabet to be part of the certificate.
+finiteOperatorSpace = (basis, coefficients) -> (
+    values := flatten apply(basis, b -> apply(coefficients, c -> c*b));
+    unique values
+);
+
+-- Exhaustive constructive generation inside a declared finite operator
+-- space.  The result is guaranteed only relative to that finite space and
+-- requested column bound.  It returns no Lambda rather than silently using
+-- an identity augmentation.
+generateProjectiveLambda = (R, operatorSpace, maxColumns) -> (
+    if maxColumns < 1 or maxColumns > 2 then
+        error "generateProjectiveLambda supports maxColumns = 1 or 2";
+    q := numRows R;
+    candidates := gtAllOperatorVectors(q, operatorSpace);
+    tested := 0;
+    found := null;
+
+    if maxColumns >= 1 then (
+        for i from 0 to #candidates - 1 do (
+            if found === null and not gtIsZeroColumn(candidates#i) then (
+                tested = tested + 1;
+                Lambda := gtColumnMatrix(candidates#i);
+                P := R | (-Lambda);
+                proof := projectivityProofOracle P;
+                if proof#"projective" then found = new HashTable from {
+                    "Lambda" => Lambda,
+                    "P" => P,
+                    "proof" => proof
+                };
+            );
+        );
+    );
+
+    if found === null and maxColumns == 2 then (
+        for i from 0 to #candidates - 1 do for j from i + 1 to #candidates - 1 do (
+            if found === null and
+                not gtIsZeroColumn(candidates#i) and
+                not gtIsZeroColumn(candidates#j) then (
+                tested = tested + 1;
+                Lambda := gtColumnMatrix(candidates#i) | gtColumnMatrix(candidates#j);
+                P := R | (-Lambda);
+                proof := projectivityProofOracle P;
+                if proof#"projective" then found = new HashTable from {
+                    "Lambda" => Lambda,
+                    "P" => P,
+                    "proof" => proof
+                };
+            );
+        );
+    );
+
+    if found === null then new HashTable from {
+        "found" => false,
+        "tested" => tested,
+        "spaceSize" => #operatorSpace,
+        "candidateCount" => #candidates,
+        "maxColumns" => maxColumns,
+        "completeWithinSpace" => true
+    } else new HashTable from {
+        "found" => true,
+        "tested" => tested,
+        "spaceSize" => #operatorSpace,
+        "candidateCount" => #candidates,
+        "maxColumns" => maxColumns,
+        "completeWithinSpace" => true,
+        "Lambda" => found#"Lambda",
+        "P" => found#"P",
+        "proof" => found#"proof"
     }
 );
