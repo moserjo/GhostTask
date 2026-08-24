@@ -175,18 +175,28 @@ not recoverable from the tasks.  Whether that matters for the
 conditioning claim behind Figure 8 is an open question this pull request
 does not answer.
 
-For Experiment 3 there is a certified alternative.  Over `QQ(nu0)`,
+For Experiment 3 there is a certified one-column alternative.  Over
+`QQ(nu0)`,
 
     Lambda = (0, x z, 1)
 
 generates `ext^1` for `R1 = [L | -e1]`, so `[L | -e1 | -Lambda]` is
 stably free; `(0,1,0)`, `(0,0,1)` and `(1, x z, 0)` are all rejected, so
 the certificate discriminates.  Only one ghost column is needed, the
-same width as the gauge column in use.  The corresponding explicit
-parametrisation was **not** computed: the syzygy did not finish in 500 s
-over `QQ(nu0)`, and no kernel is proposed for it here.  Until that is
-done this is a statement about the module, not a drop-in replacement for
-`writing_kernel.py`.
+same width as the gauge column in use.  Its unrestricted syzygy remains a
+cost boundary for the native Gröbner implementation, however, so it is
+kept as a checked candidate and a bounded diagnostic.
+
+The implemented fast fallback uses Stafford's certified two-column block
+
+    Lambda_two = (e2, e3).
+
+Together with the source column `-e1` already present in `R1`, the last
+three columns of `[L | -e1 | -Lambda_two]` are `-I_3`.  The complete kernel
+is therefore constructed directly as `[I_3 ; L]` by
+`gtIdentityCompletedKernel`, and is independently checked against the
+native syzygy module.  This is a drop-in, rank-sized parametrisation for the
+two-column Stafford block and avoids the stalled one-column search.
 
 Note that `(1, x z, 0)`, which an earlier pull request certified for
 Experiment 3, is a generator for the *stale* system of

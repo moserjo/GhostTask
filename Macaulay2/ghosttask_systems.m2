@@ -133,3 +133,10 @@ gtA3part = gtB3full^{0,1,2};
 -- oracle: this ghost column makes the augmentation stably free, which
 -- the gauge column -e2 does not.  See Macaulay2/PIPELINE.md.
 gtLambda3free = matrix{{0_gtW3}, {x*z}, {1}};
+
+-- Fast certified two-column fallback for the projective Ex3 augmentation.
+-- The source column in gtR3 is -e1; together with these two Stafford
+-- generators the final three columns are -I_3.  Hence the complete kernel is
+-- the split matrix [I_3 ; gtL3], with no expensive unrestricted syzygy call.
+gtLambda3two = matrix{{0_gtW3, 0_gtW3}, {1, 0}, {0, 1}};
+gtB3two = gtIdentityCompletedKernel gtL3;

@@ -13,6 +13,15 @@ gtMPProd = (A, B) -> matrix table(numRows A, numColumns B,
 
 gtMPIsZero = M -> all(flatten entries M, entry -> entry == 0);
 
+-- If the augmented operator is [L | -I_q], its complete kernel is the
+-- explicit split matrix [I_p ; L].  This avoids a Gröbner syzygy search for
+-- identity-completed Stafford blocks while retaining the same operator-order
+-- convention as gtMPProd.
+gtIdentityCompletedKernel = L -> (
+    D := ring L;
+    id_(D^(numColumns L)) || L
+);
+
 gtMPComplete = (R, Q) -> (
     D := ring R;
     p := numColumns R;
