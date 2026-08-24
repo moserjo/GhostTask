@@ -47,6 +47,8 @@ gtIsCompleteParametrisation = (R, B) -> (
     isSubset(IB, IS) and isSubset(IS, IB)
     );
 
+load "Macaulay2/minimal_parametrization.m2";
+
 ------------------------------------------------------------------
 -- Experiment 1: pedagogical shear transport
 ------------------------------------------------------------------

@@ -226,6 +226,29 @@ and nothing in this pull request touches it.  The single columns
 certified above are decisions about individual systems by terminating
 Groebner computations, not evidence in either direction.
 
+## Computing from a supplied `Lambda`
+
+`Macaulay2/minimal_parametrization.m2` exposes
+`gtMinimalParametrization(R, Lambda)`.  It forms `P = R | (-Lambda)`, computes
+the transposed Weyl syzygies, converts them back to the operator convention,
+and then checks both `P*Q = 0` and equality with the complete syzygy module.
+The result reports the generic rank `numColumns(P) - numRows(P)` and only marks
+the column count as certified minimum when it reaches that rank.  This guard
+matters: a projectivity certificate does not by itself prove that a rank-sized
+parametrisation has been found, and the Maple routine can otherwise return an
+under-ranked selection.
+
+For a hard input, `gtBoundedParametrizationFromLambda(R, Lambda, limit)` is a
+diagnostic only.  It returns a bounded syzygy sample with `complete => false`,
+so a `SyzygyLimit` cannot be mistaken for a parametrisation proof.  The Ex3
+projective candidate `(0, x*z, 1)^T` is certified by
+`lambdaGeneratesExt1Decision`, but its unrestricted syzygy remains the known
+cost boundary; the regression test records that distinction explicitly.
+
+Run the API regression with:
+
+    M2 --script tests/minimal_parametrization_test.m2
+
 ## Running it
 
     M2 --script tests/ghosttask_pipeline_test.m2
