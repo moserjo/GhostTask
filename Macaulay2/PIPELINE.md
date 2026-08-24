@@ -255,6 +255,32 @@ projective candidate `(0, x*z, 1)^T` is certified by
 `lambdaGeneratesExt1Decision`, but its unrestricted syzygy remains the known
 cost boundary; the regression test records that distinction explicitly.
 
+### Completion-first reduction
+
+The general optimization is exposed in the same file.  Given a core matrix
+`A`, a checked unimodular square block `C` and its operator-order inverse
+`Cinv`,
+
+    gtMPCompletedKernel(A, C, Cinv)
+
+constructs the complete kernel of `[A | C]` as `[I ; -Cinv*A]`.  If only a
+subset of the columns of `C` belongs to the target presentation,
+`gtMPCompletionData` eliminates the auxiliary coordinates and returns the
+smaller constraint matrix.  `gtMPReducedKernel` computes syzygies only for
+that constraint and lifts them back; `gtBoundedReducedKernel` is the explicit
+incomplete diagnostic for a hard constraint.  The construction follows the
+identity-block/decomposition step used before the minimal-parametrisation
+algorithm in Chyzak--Quadrat--Robertz, *Effective algorithms for
+parametrizing linear control systems over Ore algebras*
+([paper](https://mathexp.eu/chyzak/Publications/ChyzakQuadratRobertz-2005-EAP.pdf)).
+
+For the Ex3 one-column candidate, the source, candidate and auxiliary `-e2`
+columns form `C`; the 3 x 5 kernel search is thereby reduced to the single
+1 x 3 row `H`.  The bounded reduction returns valid operator-order relations
+quickly, but it remains marked incomplete until the unrestricted transposed
+syzygy finishes.  The production fallback uses the fully explicit `-I_3`
+completion, so it is complete and rank-sized without relying on a timeout.
+
 Run the API regression with:
 
     M2 --script tests/minimal_parametrization_test.m2

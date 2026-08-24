@@ -134,6 +134,16 @@ gtA3part = gtB3full^{0,1,2};
 -- the gauge column -e2 does not.  See Macaulay2/PIPELINE.md.
 gtLambda3free = matrix{{0_gtW3}, {x*z}, {1}};
 
+-- A unimodular completion for the projective one-column candidate.  Its
+-- columns are the source -e1, the candidate -Lambda, and an auxiliary -e2;
+-- the last auxiliary coordinate is eliminated by the completion reduction.
+gtC3free = matrix{{-1_gtW3, 0_gtW3, 0_gtW3},
+                  {0_gtW3, -x*z, -1},
+                  {0_gtW3, -1, 0}};
+gtC3freeInv = matrix{{-1_gtW3, 0_gtW3, 0_gtW3},
+                     {0_gtW3, 0, -1},
+                     {0_gtW3, -1, x*z}};
+
 -- Fast certified two-column fallback for the projective Ex3 augmentation.
 -- The source column in gtR3 is -e1; together with these two Stafford
 -- generators the final three columns are -I_3.  Hence the complete kernel is

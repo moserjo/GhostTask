@@ -36,6 +36,34 @@ partial := gtBoundedParametrizationFromLambda(gtR3, gtLambda3free, 2);
 assertTrue("Ex3 projective bounded result is marked incomplete",
     partial#"relationZero" and not partial#"complete");
 
+-- The general completion reduction sees the same one-column problem as a
+-- single auxiliary constraint row, without expanding the original 3 x 5
+-- presentation.  The row is checked against its independently derived form.
+ex3completion := gtMPCompletionData(gtL3, gtC3free, gtC3freeInv, {0,1});
+ex3constraint := gtProd(matrix{{0_gtW3, 1_gtW3, -x*z}}, gtL3);
+assertTrue("Ex3 completion block is unimodular in operator order",
+    gtMPUnimodularBlock(gtC3free, gtC3freeInv));
+assertTrue("Ex3 completion has the expected target and constraint row",
+    entries ex3completion#"P" == entries (gtR3 | (-gtLambda3free)) and
+    gtMPIsZero (ex3completion#"constraint" - ex3constraint) and
+    ex3completion#"fullRelationZero" and
+    gtMPComplete(gtL3 | gtC3free, ex3completion#"Qfull"));
+reducedPartial := gtBoundedReducedKernel(gtL3, gtC3free, gtC3freeInv,
+    {0,1}, 2);
+assertTrue("Ex3 reduced bounded sample is an operator-order relation",
+    reducedPartial#"relationZero" and not reducedPartial#"complete");
+
+-- Small independent two-row oracle for the complete reduced-kernel API.
+toyD := QQ[tx, tdx, WeylAlgebra => {tx => tdx}];
+toyA := matrix{{1_toyD, 0_toyD}, {tx, tx*tdx}};
+toyC := -id_(toyD^2);
+toyReduced := gtMPReducedKernel(toyA, toyC, toyC, {0});
+toyP := toyA | submatrix(toyC, {0});
+assertTrue("Generic completion reduction returns a complete toy kernel",
+    toyReduced#"relationZero" and toyReduced#"complete" and
+    toyReduced#"columns" == toyReduced#"genericRank" and
+    gtMPComplete(toyP, toyReduced#"Q"));
+
 -- The checked implementation uses Stafford's certified two-column fallback
 -- for this hard projective case.  The source column and (e2,e3) complete an
 -- identity block, so the kernel is constructed directly as [I3 ; L].
