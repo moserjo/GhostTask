@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+set -euo pipefail
+repo_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$repo_dir"
+if grep -nE '(^|[^[:alnum:]_])(sorry|admit)([^[:alnum:]_]|$)|^[[:space:]]*axiom[[:space:]]' proofs/*.lean; then
+  echo 'FORMAL: FAIL (unproved declaration in source)' >&2
+  exit 1
+else
+  source_status="$?"
+  if [[ "$source_status" != 1 ]]; then
+    echo 'FORMAL: FAIL (source scan did not complete)' >&2
+    exit 1
+  fi
+fi
+lake build
+report="$(lake env lean -j1 -M4096 proofs/Audit.lean 2>&1)"
+printf '%s\n' "$report"
+printf '%s\n' "$report" | python3 -c '
+import re,sys
+report=sys.stdin.read()
+expected={"GhostTasking."+s for s in ("ex1_split","ex2_split","ex3_split","tripendulum_split")}
+records=re.findall(r"[\x27`]([^\x27`]+)[\x27`] (?:depends on axioms: \[([^]]*)\]|does not depend on any axioms)",report)
+if len(records)!=4 or {n for n,_ in records}!=expected:
+ raise SystemExit("FORMAL: FAIL (missing or duplicate axiom report)")
+allowed={"propext","Classical.choice","Quot.sound"}
+for name,axioms in records:
+ unexpected={a.strip() for a in axioms.split(",") if a.strip()}-allowed
+ if unexpected: raise SystemExit("FORMAL: FAIL ("+name+": "+str(unexpected)+")")
+print("FORMAL: PASS (4 theorems; axioms within propext, Classical.choice, Quot.sound)")
+'
