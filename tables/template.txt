@@ -1,0 +1,19 @@
+\begin{table}[]
+\begin{tabular}{|l|l|lll|lll|}
+\hline
+   &          & \multicolumn{3}{l|}{\textbf{GT}}                                                                   & \multicolumn{3}{l|}{PIGP}                                                                          \\ \hline
+npoints  & $\sigma$ & \multicolumn{1}{l|}{standard} & \multicolumn{1}{l|}{extra\_npoints} & extra\_npoints\_extra\_sigma & \multicolumn{1}{l|}{standard} & \multicolumn{1}{l|}{extra\_npoints} & extra\_npoints\_extra\_sigma \\ \hline
+3  & 0.001    & \multicolumn{1}{l|}{}         & \multicolumn{2}{l|}{}                                              & \multicolumn{1}{l|}{}         & \multicolumn{2}{l|}{}                                              \\ \hline
+3  & 0.01     & \multicolumn{1}{l|}{}         & \multicolumn{1}{l|}{}               &                              & \multicolumn{1}{l|}{}         & \multicolumn{1}{l|}{}               &                              \\ \hline
+3  & 0.1      & \multicolumn{1}{l|}{}         & \multicolumn{1}{l|}{}               &                              & \multicolumn{1}{l|}{}         & \multicolumn{1}{l|}{}               &                              \\ \hline
+3  & 0.2      & \multicolumn{1}{l|}{}         & \multicolumn{1}{l|}{}               &                              & \multicolumn{1}{l|}{}         & \multicolumn{1}{l|}{}               &                              \\ \hline
+5  & 0.001    & \multicolumn{1}{l|}{}         & \multicolumn{1}{l|}{}               &                              & \multicolumn{1}{l|}{}         & \multicolumn{1}{l|}{}               &                              \\ \hline
+5  & 0.01     & \multicolumn{1}{l|}{}         & \multicolumn{1}{l|}{}               &                              & \multicolumn{1}{l|}{}         & \multicolumn{1}{l|}{}               &                              \\ \hline
+5  & 0.1      & \multicolumn{1}{l|}{}         & \multicolumn{1}{l|}{}               &                              & \multicolumn{1}{l|}{}         & \multicolumn{1}{l|}{}               &                              \\ \hline
+5  & 0.2      & \multicolumn{1}{l|}{}         & \multicolumn{1}{l|}{}               &                              & \multicolumn{1}{l|}{}         & \multicolumn{1}{l|}{}               &                              \\ \hline
+10 & 0.001    & \multicolumn{1}{l|}{}         & \multicolumn{1}{l|}{}               &                              & \multicolumn{1}{l|}{}         & \multicolumn{1}{l|}{}               &                              \\ \hline
+10 & 0.01     & \multicolumn{1}{l|}{}         & \multicolumn{1}{l|}{}               &                              & \multicolumn{1}{l|}{}         & \multicolumn{1}{l|}{}               &                              \\ \hline
+10 & 0.1      & \multicolumn{1}{l|}{}         & \multicolumn{1}{l|}{}               &                              & \multicolumn{1}{l|}{}         & \multicolumn{1}{l|}{}               &                              \\ \hline
+10 & 0.2      & \multicolumn{2}{l|}{}                                               &                              & \multicolumn{2}{l|}{}                                               &                              \\ \hline
+\end{tabular}
+\end{table}

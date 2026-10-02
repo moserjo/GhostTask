@@ -1,0 +1,221 @@
+
+i1 : 
+     needsPackage "Dmodules"
+
+o1 = Dmodules
+
+o1 : Package
+
+i2 : --Alg = QQ[t, x, dt, dx, a, WeylAlgebra => {x=>dx, t=> dt}]
+     kk = frac(QQ[a]);
+
+i3 : Alg = kk[t, x, dt, dx, WeylAlgebra => {x=>dx, t=> dt}]
+
+o3 = Alg
+
+o3 : PolynomialRing, 2 differential variable(s)
+
+i4 : 
+     --defining helper functions
+     combos = (S,n) -> if n == 0 then {{}} else flatten apply(S, s -> apply(combos(S,n-1), c -> prepend(s,c)));
+
+i5 : strip = X -> map((ring X)^(numRows X), (ring X)^(numColumns X), entries X)
+
+o5 = strip
+
+o5 : FunctionClosure
+
+i6 : 
+     -- defining checks
+     isTorsionFree = P -> (
+         K1 := strip syz P;
+         Q1 := strip transpose Dtransposition P;
+         Q2 := strip transpose Dtransposition K1;
+         ext1N := prune (kernel Q2 / image Q1);
+         ext1N == 0)
+
+o6 = isTorsionFree
+
+o6 : FunctionClosure
+
+i7 : isProjective = P -> isSubset(image id_(target Dtransposition P), image Dtransposition P);
+
+i8 : RightInverse = P -> (
+     W = id_(target Dtransposition P) // Dtransposition P;
+     W =!= null and (Dtransposition P)*W == id_(target Dtransposition P);
+     S = Dtransposition W) --this is the right inverse
+
+o8 = RightInverse
+
+o8 : FunctionClosure
+
+i9 : 
+     -- defining brute force search
+     findTorsionFreeLambda = (R,ops) -> (D := ring R; space := apply(ops, o -> promote(o,D)); 
+                             L := null; 
+                             scan(combos(space,numRows R), 
+                             v -> if L === null and any(v, e -> e != 0) 
+                             then (C := matrix apply(v, e -> {e}); 
+                             if isTorsionFree(R|(-C)) then L = C));
+                              L);
+
+i10 : 
+      findProjectiveLambda = (R,ops) -> (D := ring R; space := apply(ops, o -> promote(o,D)); 
+                              L := null; 
+                              scan(combos(space,numRows R), 
+                              v -> if L === null and any(v, e -> e != 0) 
+                              then (C := matrix apply(v, e -> {e}); 
+                              if isProjective(R|(-C)) then L = C));
+                               L);
+
+i11 : 
+      
+      
+      
+      R = matrix{{x*dx + dt, a*dx}, {0, x*dx + dt}} --system matrix
+
+o11 = | xdx+dt adx    |
+      | 0      xdx+dt |
+
+                2         2
+o11 : Matrix Alg  <--- Alg
+
+i12 : isTorsionFree(R) --check if torsion free: no
+
+o12 = false
+
+i13 : 
+      ext1M = coker Dtransposition R;
+
+i14 : isHolonomic ext1M --is not holonomic, so we cannot directly calculate Lambda, instead we brute force (or guess)
+
+o14 = false
+
+i15 : 
+      Lambda = findTorsionFreeLambda(R, {0,1,-1,dt,-dt}) --non unique
+
+o15 = | 0 |
+      | 1 |
+
+                2         1
+o15 : Matrix Alg  <--- Alg
+
+i16 : LambdaUsed = matrix{{1},{dt}} --Lambda used in paper
+
+o16 = | 1  |
+      | dt |
+
+                2         1
+o16 : Matrix Alg  <--- Alg
+
+i17 : 
+      P = R|(-LambdaUsed) --define new system
+
+o17 = | xdx+dt adx    -1  |
+      | 0      xdx+dt -dt |
+
+                2         3
+o17 : Matrix Alg  <--- Alg
+
+i18 : 
+      isTorsionFree(P) --check if torsion free
+
+o18 = true
+
+i19 : isProjective(P) --check if projective 
+
+o19 = false
+
+i20 : 
+      --calculating parametrization matrix Q:
+      Q = Dtransposition mingens image syz Dtransposition P --not necessarily minimal
+
+o20 = | xdx-adtdx+dt-1        |
+      | xdtdx+dt^2-dt         |
+      | x2dx^2+2xdtdx+dt^2-dt |
+
+                3         1
+o20 : Matrix Alg  <--- Alg
+
+i21 : transpose Q*(transpose P) -- test: should be 0
+
+o21 = 0
+
+                1         2
+o21 : Matrix Alg  <--- Alg
+
+i22 : --alternative torsion-free check
+      Pnew = transpose mingens image syz transpose Q --if the rows have the same linear span as the rows of P, it's torsion free
+
+o22 = {-2} | xdx+dt adx    -1  |
+      {-2} | 0      xdx+dt -dt |
+
+                2         3
+o22 : Matrix Alg  <--- Alg
+
+i23 : 
+      
+      
+      --to find a projective Lambda, we can also apply brute force search 
+      LambdaProjective = findProjectiveLambda(R, {0,1,-1, t, -t})
+
+o23 = | 1 |
+      | t |
+
+                2         1
+o23 : Matrix Alg  <--- Alg
+
+i24 : 
+      PProj = R|(-LambdaProjective)
+
+o24 = | xdx+dt adx    -1 |
+      | 0      xdx+dt -t |
+
+                2         3
+o24 : Matrix Alg  <--- Alg
+
+i25 : isTorsionFree(PProj) --check if torsion free: yes
+
+o25 = true
+
+i26 : isProjective(PProj) --check if projective : yes
+
+o26 = true
+
+i27 : RightInverse(PProj) --alternative check: if right inverse exists, it is also projective
+
+o27 = | 4atxdx^2-4x2dx^2-at2dx+txdx+4atdtdx-8xdtdx+tdt-4dt^2+2atdx+2xdx-t+6dt-8adx+1           -2atxdx^2+2x2dx^2-2atdtdx+4xdtdx+2dt^2-atdx-xdx-3dt+4adx+1 |
+      | -4tx2dx^2+t2xdx-8txdtdx+t2dt-4tdt^2+2txdx-t2+6tdt+4xdx+4dt-6                           2tx2dx^2+4txdtdx+2tdt^2-txdx-3tdt-2xdx+t-2dt+3             |
+      | -4x3dx^3+tx2dx^2-12x2dtdx^2+2txdtdx-12xdt^2dx-6x2dx^2+tdt^2-4dt^3-tdt+6dt^2+4xdx+2dt-2 2x3dx^3+6x2dtdx^2+6xdt^2dx+3x2dx^2+2dt^3-3dt^2+dt          |
+
+                3         2
+o27 : Matrix Alg  <--- Alg
+
+i28 : 
+      --calculating parametrization matrix Q:
+      QProj = Dtransposition mingens image syz Dtransposition PProj --not necessarily minimal
+
+o28 = | -atxdx^3+x2dx^3+a/4t2dx^2+(-1)/4ax2dx^2-atdtdx^2+2xdtdx^2+(-1)/2axdtdx+dt^2dx+(-a)/2tdx^2+(-1)/2xdx^2+(-1)/4adt^2+1/2tdx+(-3)/2dtdx+2adx^2+1/4adt+(-3)/4dx                                                                        atx2dx^2-x3dx^2+4a2txdtdx^2-4ax2dtdx^2-a2t2dtdx+2atxdtdx-2x2dtdx+4a2tdt^2dx-8axdt^2dx-4a2txdx^2+4ax2dx^2+atdt^2-xdt^2-4adt^3+a2t2dx+2atxdx-2x2dx-2a2tdtdx+10axdtdx-atdt-xdt+10adt^2-2a2tdx-4axdx-8a2dtdx+2at-5adt+8a2dx-4a1                             at2xdx^2-tx2dx^2+at2dtdx-2txdtdx-2atxdx^2+2x2dx^2-tdt^2+at2dx-2atdtdx+4xdtdx+tdt+2dt^2-2atdx-3xdx-5dt+4adx+1     at3dx^2-t2xdx^2-t2dtdx+t2dx-5tdx+1/axdx+1/adt                                                  at3dtdx-t2xdtdx-t2dt^2-at3dx+t2xdx-4atxdx^2+4x2dx^2+2t2dt+at2dx+(-1)/ax2dx-4atdtdx+8xdtdx-t2-5tdt+(-1)/axdt+4dt^2-2atdx-2xdx+7t+(-1)/ax-6dt+8adx-3                                                                                |
+      | tx2dx^3+(-1)/4t2xdx^2+(-1)/4atx2dx^2+2txdtdx^2+(-1)/4t2dtdx+(-1)/2atxdtdx+tdt^2dx+(-1)/2txdx^2+(-1)/4atdt^2+1/4t2dx+(-3)/2tdtdx-xdx^2+1/4atdt+1/4axdx-dtdx+1/4adt+3/2dx+(-1)/4a                                                   -tx3dx^2-4atx2dtdx^2+at2xdtdx-2tx2dtdx-8atxdt^2dx+4atx2dx^2+at2dt^2-txdt^2-4atdt^3-at2xdx-2tx2dx+10atxdtdx-2at2dt-txdt+10atdt^2-2atxdx+x2dx+4axdtdx+at2-6atdt+xdt+4adt^2-4axdx-10adt+6a1                                                                -t2x2dx^2-2t2xdtdx+2tx2dx^2-t2dt^2+4txdtdx+t2dt+2tdt^2-2txdx-4tdt-2xdx-2dt+4                                     -t3xdx^2-t3dtdx+t3dx-3t2dx+1/atxdx+1/atdt+(-1)/a                                               -t3xdtdx-t3dt^2+t3xdx+4tx2dx^2+2t3dt-t2xdx+(-1)/atx2dx+8txdtdx-t3-4t2dt+(-1)/atxdt+4tdt^2-2txdx+4t2+(-1)/atx-6tdt-4xdx+1/ax-4dt+6                                                                                                 |
+      | x3dx^4+(-1)/4tx2dx^3+(-1)/4ax3dx^3+3x2dtdx^3+(-1)/2txdtdx^2+(-3)/4ax2dtdx^2+3xdt^2dx^2+3/2x2dx^3+(-1)/4tdt^2dx+(-3)/4axdt^2dx+dt^3dx+(-1)/2ax2dx^2+(-1)/4adt^3+1/4tdtdx+(-1)/4axdtdx+(-3)/2dt^2dx-xdx^2+1/4adt^2+(-1)/2dtdx+1/2dx -x4dx^3-4ax3dtdx^3+atx2dtdx^2-3x3dtdx^2-12ax2dt^2dx^2+4ax3dx^3+2atxdt^2dx-3x2dt^2dx-12axdt^3dx-atx2dx^2-5x3dx^2+6ax2dtdx^2+atdt^3-xdt^3-4adt^4-2atxdtdx-7x2dtdx+12axdt^2dx+6ax2dx^2-2atdt^2-2xdt^2+10adt^3-4x2dx+4axdtdx+atdt-xdt-4adt^2-4axdx-4adt+2a1 -tx3dx^3-3tx2dtdx^2+2x3dx^3-3txdt^2dx-2tx2dx^2+6x2dtdx^2-tdt^3-txdtdx+6xdt^2dx+tdt^2+2dt^3-6xdtdx-6dt^2-2xdx+2dt -t2x2dx^3-2t2xdtdx^2-t2dt^2dx+t2dtdx-6txdx^2+1/ax2dx^2-6tdtdx+2/axdtdx+1/adt^2+3tdx+1/axdx-6dx -t2x2dtdx^2-2t2xdt^2dx+t2x2dx^2+4x3dx^3-t2dt^3+2t2xdtdx-tx2dx^2+(-1)/ax3dx^2+12x2dtdx^2+2t2dt^2-8txdtdx+(-2)/ax2dtdx+12xdt^2dx+6x2dx^2-t2dt-7tdt^2+(-1)/axdt^2+4dt^3+6txdx+(-3)/ax2dx+10tdt+(-2)/axdt-6dt^2-4xdx-3t+(-1)/ax-8dt+8 |
+
+                3         5
+o28 : Matrix Alg  <--- Alg
+
+i29 : transpose QProj*(transpose PProj) -- test: should be 0
+
+o29 = 0
+
+                5         2
+o29 : Matrix Alg  <--- Alg
+
+i30 : --alternative torsion-free check
+      PProjnew = transpose mingens image syz transpose Q --if the rows have the same linear span as the rows of P, it's torsion free
+
+o30 = {-2} | xdx+dt adx    -1  |
+      {-2} | 0      xdx+dt -dt |
+
+                2         3
+o30 : Matrix Alg  <--- Alg
+
+i31 : 

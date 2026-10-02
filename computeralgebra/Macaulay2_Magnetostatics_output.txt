@@ -1,0 +1,209 @@
+
+i1 : 
+     needsPackage "Dmodules"
+
+o1 = Dmodules
+
+o1 : Package
+
+i2 : kk = frac(QQ[nu0]);
+
+i3 : Alg = kk[x, y, z, dx, dy, dz,  WeylAlgebra => {x=>dx, y=>dy, z=>dz}] 
+
+o3 = Alg
+
+o3 : PolynomialRing, 3 differential variable(s)
+
+i4 : 
+     --defining helper functions
+     combos = (S,n) -> if n == 0 then {{}} else flatten apply(S, s -> apply(combos(S,n-1), c -> prepend(s,c)));
+
+i5 : strip = X -> map((ring X)^(numRows X), (ring X)^(numColumns X), entries X)
+
+o5 = strip
+
+o5 : FunctionClosure
+
+i6 : 
+     -- defining checks
+     isTorsionFree = P -> (
+         K1 := strip syz P;
+         Q1 := strip transpose Dtransposition P;
+         Q2 := strip transpose Dtransposition K1;
+         ext1N := prune (kernel Q2 / image Q1);
+         ext1N == 0)
+
+o6 = isTorsionFree
+
+o6 : FunctionClosure
+
+i7 : isProjective = P -> isSubset(image id_(target Dtransposition P), image Dtransposition P);
+
+i8 : RightInverse = P -> (
+     W = id_(target Dtransposition P) // Dtransposition P;
+     W =!= null and (Dtransposition P)*W == id_(target Dtransposition P);
+     S = Dtransposition W) --this is the right inverse
+
+o8 = RightInverse
+
+o8 : FunctionClosure
+
+i9 : 
+     -- defining brute force search
+     findTorsionFreeLambda = (R,ops) -> (D := ring R; space := apply(ops, o -> promote(o,D)); 
+                             L := null; 
+                             scan(combos(space,numRows R), 
+                             v -> if L === null and any(v, e -> e != 0) 
+                             then (C := matrix apply(v, e -> {e}); 
+                             if isTorsionFree(R|(-C)) then L = C));
+                              L);
+
+i10 : 
+      findProjectiveLambda = (R,ops) -> (D := ring R; space := apply(ops, o -> promote(o,D)); 
+                              L := null; 
+                              scan(combos(space,numRows R), 
+                              v -> if L === null and any(v, e -> e != 0) 
+                              then (C := matrix apply(v, e -> {e}); 
+                              if isProjective(R|(-C)) then L = C));
+                               L);
+
+i11 : 
+      
+      
+      
+      
+      curl = matrix{{0, -dz, dy},{dz, 0, -dx}, {-dy, dx, 0}}
+
+o11 = | 0   -dz dy  |
+      | dz  0   -dx |
+      | -dy dx  0   |
+
+                3         3
+o11 : Matrix Alg  <--- Alg
+
+i12 : nu = matrix{{nu0,0,0},{0,nu0, 0},{0,0,nu0*z}}
+
+o12 = | nu0 0   0    |
+      | 0   nu0 0    |
+      | 0   0   nu0z |
+
+                3         3
+o12 : Matrix Alg  <--- Alg
+
+i13 : curlnucurlA = curl*nu*curl
+
+o13 = | -nu0zdy^2-nu0dz^2 nu0zdxdy          nu0dxdz          |
+      | nu0zdxdy          -nu0zdx^2-nu0dz^2 nu0dydz          |
+      | nu0dxdz           nu0dydz           -nu0dx^2-nu0dy^2 |
+
+                3         3
+o13 : Matrix Alg  <--- Alg
+
+i14 : R = curlnucurlA|(-matrix{{1},{0},{0}})
+
+o14 = | -nu0zdy^2-nu0dz^2 nu0zdxdy          nu0dxdz          -1 |
+      | nu0zdxdy          -nu0zdx^2-nu0dz^2 nu0dydz          0  |
+      | nu0dxdz           nu0dydz           -nu0dx^2-nu0dy^2 0  |
+
+                3         4
+o14 : Matrix Alg  <--- Alg
+
+i15 : isTorsionFree(R) --check if torsion free: no
+
+o15 = false
+
+i16 : 
+      ext1M = coker Dtransposition R;
+
+i17 : isHolonomic ext1M --is not holonomic, so we cannot directly calculate Lambda
+
+o17 = false
+
+i18 : --instead we brute force (or guess)
+      Lambda = findTorsionFreeLambda(R, {0,1,-1})
+
+o18 = | 0 |
+      | 0 |
+      | 1 |
+
+                3         1
+o18 : Matrix Alg  <--- Alg
+
+i19 : --this Lambda leads to a torsion-free system:
+      LambdaUsed = matrix{{0}, {1}, {0}}
+
+o19 = | 0 |
+      | 1 |
+      | 0 |
+
+               3        1
+o19 : Matrix ZZ  <--- ZZ
+
+i20 : 
+      P = R|(-LambdaUsed) --define new system
+
+o20 = | -nu0zdy^2-nu0dz^2 nu0zdxdy          nu0dxdz          -1 0  |
+      | nu0zdxdy          -nu0zdx^2-nu0dz^2 nu0dydz          0  -1 |
+      | nu0dxdz           nu0dydz           -nu0dx^2-nu0dy^2 0  0  |
+
+                3         5
+o20 : Matrix Alg  <--- Alg
+
+i21 : 
+      isTorsionFree(P) --check if torsion free
+
+o21 = true
+
+i22 : isProjective(P) --check if projective 
+
+o22 = false
+
+i23 : 
+      --calculating parametrization matrix Q:
+      Q = Dtransposition mingens image syz Dtransposition P --not necessarily minimal
+
+o23 = | -dx (-1)/nu0dy            |
+      | -dy 1/nu0dx               |
+      | -dz 0                     |
+      | 0   zdx^2dy+zdy^3+dydz^2  |
+      | 0   -zdx^3-zdxdy^2-dxdz^2 |
+
+                5         2
+o23 : Matrix Alg  <--- Alg
+
+i24 : transpose Q*(transpose P) -- test: should be 0
+
+o24 = 0
+
+                2         3
+o24 : Matrix Alg  <--- Alg
+
+i25 : --alternative torsion-free check
+      Pnew = transpose mingens image syz transpose Q --if the rows have the same linear span as the rows of P, it's torsion free
+
+o25 = {-2} | -dxdz       -dydz      dx^2+dy^2 0        0     |
+      {-3} | -zdy^2-dz^2 zdxdy      dxdz      (-1)/nu0 0     |
+      {-3} | -zdxdy      zdx^2+dz^2 -dydz     0        1/nu0 |
+
+                3         5
+o25 : Matrix Alg  <--- Alg
+
+i26 : 
+      
+      
+      --to find a projective Lambda, we can also apply brute force search 
+      LambdaProjective = findProjectiveLambda(R, {0,1,-1, x, y, z, x*z})
+
+o26 = | 0  |
+      | xz |
+      | 1  |
+
+                3         1
+o26 : Matrix Alg  <--- Alg
+
+i27 : 
+      
+      --to find a projective Lambda, we can also apply brute force search (commented out because it takes long to calculate)
+      -- result: Lambda = (1, xz, 0)
+      --LambdaProjective = findProjectiveLambda(R1, {0,1,-1,x, z, x*z, y, y*z})
+      --we could try to again find a parametrization matrix Q like above, but on my laptop it crashed

@@ -1,0 +1,28 @@
+% Requires \usepackage{booktabs} and \usepackage{siunitx} in the preamble.
+\begin{table}[]
+\sisetup{mode=match, round-mode=figures, round-precision=2, scientific-notation=true, table-format=1.2e-1, detect-weight=true, detect-shape=true, detect-family=true}
+\begin{tabular}{llSSSSSS}
+\toprule
+{$\frac{\Delta a}{a}$} & & \multicolumn{2}{c}{\textbf{GT}} & \multicolumn{2}{c}{\textbf{GT projective}} & \multicolumn{2}{c}{PIGP} \\
+\cmidrule(lr){3-4} \cmidrule(lr){5-6} \cmidrule(lr){7-8}
+n & {$\sigma$} & {standard} & {extra\_n+$\sigma$} & {standard} & {extra\_n+$\sigma$} & {standard} & {extra\_n+$\sigma$} \\
+\midrule
+3 & 0.001 & 0.0250089 & \itshape 0.000663676 & 0.00762962 & \itshape 0.000510805 & 0.00582949 & \bfseries 0.000355886 \\
+3 & 0.01 & 0.0251172 & \bfseries 0.00308351 & \itshape 0.0103383 & 0.0125361 & 0.00865 & \itshape 0.00339176 \\
+3 & 0.1 & \itshape 0.0360237 & 0.0435996 & \bfseries 0.0333033 & 0.0830999 & \itshape 0.044 & 0.109045 \\
+3 & 0.2 & \bfseries 0.0953646 & 0.255076 & \itshape 0.168597 & 0.725525 & \itshape 0.109904 & 0.641046 \\
+\addlinespace
+5 & 0.001 & 0.000476128 & \itshape 0.000189513 & 0.000152691 & \bfseries 0.000141994 & 0.000345346 & \itshape 0.000185464 \\
+5 & 0.01 & 0.00184069 & \bfseries 0.0016835 & 0.00225342 & \itshape 0.00194024 & \itshape 0.00182672 & 0.00183743 \\
+5 & 0.1 & \itshape 0.0179435 & 0.0189678 & \itshape 0.0189525 & 0.0323223 & \bfseries 0.012887 & 0.0264649 \\
+5 & 0.2 & \bfseries 0.012287 & 0.0570769 & \itshape 0.044273 & 0.178954 & \itshape 0.0312465 & 0.302208 \\
+\addlinespace
+10 & 0.001 & \itshape 8.99094e-05 & 0.000101184 & 8.7346e-05 & \bfseries 8.6918e-05 & 9.30985e-05 & \itshape 9.02278e-05 \\
+10 & 0.01 & 0.00061429 & \bfseries 0.000471394 & 0.00122068 & \itshape 0.00117363 & 0.0012042 & \itshape 0.00120184 \\
+10 & 0.1 & 0.0116274 & \bfseries 0.00634416 & 0.0108223 & \itshape 0.00901841 & 0.0102954 & \itshape 0.0101971 \\
+10 & 0.2 & \bfseries 0.0236151 & 0.0246172 & \itshape 0.0470936 & 0.0701019 & \itshape 0.0393625 & 0.0776159 \\
+\midrule
+\multicolumn{2}{l}{\textbf{overall}} & 0.00655762 & \bfseries 0.00443914 & \itshape 0.00660932 & 0.00764208 & \itshape 0.0061298 & 0.0072101 \\
+\bottomrule
+\end{tabular}
+\end{table}

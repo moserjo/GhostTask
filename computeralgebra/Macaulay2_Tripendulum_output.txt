@@ -1,0 +1,149 @@
+
+i1 : 
+     needsPackage "Dmodules"
+
+o1 = Dmodules
+
+o1 : Package
+
+i2 : kk = frac(QQ[l,g]);
+
+i3 : W = kk[t,dt, WeylAlgebra => {t=>dt}];
+
+i4 : 
+     --defining functions
+     strip = X -> map((ring X)^(numRows X), (ring X)^(numColumns X), entries X)
+
+o4 = strip
+
+o4 : FunctionClosure
+
+i5 : 
+     isTorsionFree = P -> (
+         K1 := strip syz P;
+         Q1 := strip transpose Dtransposition P;
+         Q2 := strip transpose Dtransposition K1;
+         ext1N := prune (kernel Q2 / image Q1);
+         ext1N == 0)
+
+o5 = isTorsionFree
+
+o5 : FunctionClosure
+
+i6 : isProjective = P -> isSubset(image id_(target Dtransposition P), image Dtransposition P);
+
+i7 : RightInverse = P -> (
+     W = id_(target Dtransposition P) // Dtransposition P;
+     W =!= null and (Dtransposition P)*W == id_(target Dtransposition P);
+     S = Dtransposition W) --this is the right inverse
+
+o7 = RightInverse
+
+o7 : FunctionClosure
+
+i8 : 
+     
+     R = matrix{{l*dt^2+g,0,0,-1},{0,l*dt^2+g,0,-1},{0,0,l*dt^2+g,-1}};
+
+             3       4
+o8 : Matrix W  <--- W
+
+i9 : isTorsionFree(R) --check if torsion free: no
+
+o9 = false
+
+i10 : 
+      ext1M = coker Dtransposition R;
+
+i11 : isHolonomic ext1M --if true, the next line works
+
+o11 = true
+
+i12 : Lambda = Dtransposition (makeCyclic Dtransposition R).Generator
+
+o12 = | t4 |
+      | t2 |
+      | 1  |
+
+              3       1
+o12 : Matrix W  <--- W
+
+i13 : --gives out non-unique solution, (guessed) alternative used subsequently is (1, dt, t)
+      
+      LambdaUsed = matrix{{1}, {dt}, {t}}
+
+o13 = | 1  |
+      | dt |
+      | t  |
+
+              3       1
+o13 : Matrix W  <--- W
+
+i14 : P = R|(-LambdaUsed) --define new system
+
+o14 = | ldt^2+g 0       0       -1 -1  |
+      | 0       ldt^2+g 0       -1 -dt |
+      | 0       0       ldt^2+g -1 -t  |
+
+              3       5
+o14 : Matrix W  <--- W
+
+i15 : 
+      
+      
+      
+      
+      isTorsionFree(P) --check if torsion free: yes
+
+o15 = true
+
+i16 : isProjective(P) --check if projective (here: equivalent)
+
+o16 = true
+
+i17 : -- alternative check: calculating if a right inverse exists
+      RightInverse(P)
+
+o17 = | (-l)/(2lg+2g2)t2dt+(-l2+lg)/(2lg2+2g3)tdt^2+1/(2l+2g)t2+(2l-g)/(2lg+2g2)tdt+(l2-lg)/(2lg2+2g3)dt^2+(-1)/(2l+2g)t+(2l2-3lg+g2)/(2lg2+2g3)dt+1/(l+g)               l/(2lg+2g2)t2dt+(l2-lg)/(2lg2+2g3)tdt^2+(-1)/(2l+2g)t2+(-3l)/(2lg+2g2)tdt+(-l2+lg)/(2lg2+2g3)dt^2+1/(2l+2g)t+(-l2+2lg)/(lg2+g3)dt+l/(lg+g2)                 1/2gtdt+(-1)/2gdt+(-1)/g   |
+      | (-l)/(2lg+2g2)t2dt+(-l2+2lg)/(2lg2+2g3)tdt^2+(l2-lg)/(2lg2+2g3)dt^3+1/(2l+2g)t2+(l-2g)/(2lg+2g2)tdt+(-l+g)/(2lg+2g2)dt^2+(2l2+lg)/(2lg2+2g3)dt+(-2l-g)/(2lg+2g2) l/(2lg+2g2)t2dt+(l2-2lg)/(2lg2+2g3)tdt^2+(-l2+lg)/(2lg2+2g3)dt^3+(-1)/(2l+2g)t2+(-2l+g)/(2lg+2g2)tdt+l/(lg+g2)dt^2+(-2l2-lg)/(2lg2+2g3)dt+(4l+3g)/(2lg+2g2) 1/2gtdt+(-1)/2gdt^2+(-1)/g |
+      | 0                                                                                                                                                                0                                                                                                                                                           0                          |
+      | (-l2)/(2lg+2g2)t2dt^3+(-l3+l2g)/(2lg2+2g3)tdt^4+l/(2l+2g)t2dt^2+(l2-lg)/(2lg+2g2)tdt^3+(-l)/(2l+2g)t2dt+(-5l2+lg)/(2lg+2g2)tdt^2+g/(2l+2g)t2+(5l-g)/(2l+2g)tdt   l2/(2lg+2g2)t2dt^3+(l3-l2g)/(2lg2+2g3)tdt^4+(-l)/(2l+2g)t2dt^2+(-l2)/(lg+g2)tdt^3+l/(2l+2g)t2dt+(5l2-lg)/(2lg+2g2)tdt^2+(-g)/(2l+2g)t2+(-3l)/(l+g)tdt       l/2gtdt^3+1/2tdt-1         |
+      | l2/(2lg+2g2)tdt^3+(l3-l2g)/(2lg2+2g3)dt^4+(-l)/(2l+2g)tdt^2+(-l2+lg)/(2lg+2g2)dt^3+l/(2l+2g)tdt+(5l2-lg)/(2lg+2g2)dt^2+(-g)/(2l+2g)t+(-5l+g)/(2l+2g)dt           (-l2)/(2lg+2g2)tdt^3+(-l3+l2g)/(2lg2+2g3)dt^4+l/(2l+2g)tdt^2+l2/(lg+g2)dt^3+(-l)/(2l+2g)tdt+(-5l2+lg)/(2lg+2g2)dt^2+g/(2l+2g)t+3l/(l+g)dt                   (-l)/2gdt^3+(-1)/2dt       |
+
+                        5                 3
+o17 : Matrix (kk[t, dt])  <--- (kk[t, dt])
+
+i18 : 
+      --calculating parametrization matrix Q:
+      Q = Dtransposition mingens image syz Dtransposition P
+
+o18 = | 1/l      1/ldt^2+g/l2            |
+      | 1/l      1/ldt^3+g/l2dt          |
+      | 1/l      1/ltdt^2+g/l2t+(-2)/ldt |
+      | dt^2+g/l 0                       |
+      | 0        dt^4+2g/ldt^2+g2/l2     |
+
+                        5                 2
+o18 : Matrix (kk[t, dt])  <--- (kk[t, dt])
+
+i19 : transpose Q*(transpose P) -- test: should be 0
+
+o19 = 0
+
+                        2                 3
+o19 : Matrix (kk[t, dt])  <--- (kk[t, dt])
+
+i20 : 
+      --alternative torsion-free check
+      Pnew = transpose mingens image syz transpose Q --if the rows have the same linear span as the rows of P, it's torsion free
+
+o20 = {-2} | dt^2+g/l   0            0              (-1)/l        (-1)/l |
+      {-3} | dt^3+g/ldt -dt^2+(-g)/l 0              (-1)/ldt+1/l  0      |
+      {-3} | tdt^2+g/lt 0            -dt^2+(-g)/l   (-1)/lt+1/l   0      |
+      {-3} | 0          tdt^2+g/lt   -dt^3+(-g)/ldt (-1)/lt+1/ldt 1/l    |
+
+                        4                 5
+o20 : Matrix (kk[t, dt])  <--- (kk[t, dt])
+
+i21 : 
+      

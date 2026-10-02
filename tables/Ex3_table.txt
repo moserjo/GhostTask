@@ -1,0 +1,28 @@
+% Requires \usepackage{booktabs} and \usepackage{siunitx} in the preamble.
+\begin{table}[]
+\sisetup{mode=match, round-mode=figures, round-precision=2, scientific-notation=true, table-format=1.2e-1, detect-weight=true, detect-shape=true, detect-family=true}
+\begin{tabular}{llSSSS}
+\toprule
+{$\frac{\Delta \nu_0}{\nu_0}$} & & \multicolumn{2}{c}{\textbf{GT}} & \multicolumn{2}{c}{PIGP} \\
+\cmidrule(lr){3-4} \cmidrule(lr){5-6}
+n & {$\sigma$} & {standard} & {extra\_n+$\sigma$} & {standard} & {extra\_n+$\sigma$} \\
+\midrule
+3 & 0.001 & 0.10125 & \bfseries 0.0809063 & \itshape 0.342445 & 0.483184 \\
+3 & 0.01 & 0.0960358 & \bfseries 0.0731214 & \itshape 0.345774 & 0.494206 \\
+3 & 0.1 & 0.0834565 & \bfseries 0.0539069 & \itshape 0.386825 & 0.525768 \\
+3 & 0.2 & 0.0778331 & \bfseries 0.0469981 & \itshape 0.434896 & 0.551056 \\
+\addlinespace
+5 & 0.001 & 0.000944797 & \bfseries 0.000884615 & \itshape 0.32439 & 0.377715 \\
+5 & 0.01 & \bfseries 0.000722241 & 0.000837045 & 0.359478 & \itshape 0.279961 \\
+5 & 0.1 & 0.00377455 & \bfseries 0.00332554 & 0.373856 & \itshape 0.193678 \\
+5 & 0.2 & 0.00500214 & \bfseries 0.0046573 & 0.372423 & \itshape 0.1768 \\
+\addlinespace
+7 & 0.001 & 0.0123503 & \bfseries 0.0120364 & 0.11204 & \itshape 0.110139 \\
+7 & 0.01 & 0.000116718 & \bfseries 9.69767e-05 & 0.168336 & \itshape 0.100939 \\
+7 & 0.1 & 0.000431414 & \bfseries 0.000415067 & 0.311 & \itshape 0.205141 \\
+7 & 0.2 & \bfseries 0.00106767 & 0.00117856 & 0.340092 & \itshape 0.157765 \\
+\midrule
+\multicolumn{2}{l}{\textbf{overall}} & 0.0053422 & \bfseries 0.00463437 & 0.304887 & \itshape 0.258767 \\
+\bottomrule
+\end{tabular}
+\end{table}
