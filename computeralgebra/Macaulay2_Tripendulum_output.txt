@@ -70,20 +70,20 @@ o12 : Matrix W  <--- W
 
 i13 : --gives out non-unique solution, (guessed) alternative used subsequently is (1, dt, t)
       
-      LambdaUsed = matrix{{1}, {dt}, {t}}
+      LambdaUsed = matrix{{-1}, {-dt}, {-t}}
 
-o13 = | 1  |
-      | dt |
-      | t  |
+o13 = | -1  |
+      | -dt |
+      | -t  |
 
               3       1
 o13 : Matrix W  <--- W
 
 i14 : P = R|(-LambdaUsed) --define new system
 
-o14 = | ldt^2+g 0       0       -1 -1  |
-      | 0       ldt^2+g 0       -1 -dt |
-      | 0       0       ldt^2+g -1 -t  |
+o14 = | ldt^2+g 0       0       -1 1  |
+      | 0       ldt^2+g 0       -1 dt |
+      | 0       0       ldt^2+g -1 t  |
 
               3       5
 o14 : Matrix W  <--- W
@@ -108,7 +108,7 @@ o17 = | (-l)/(2lg+2g2)t2dt+(-l2+lg)/(2lg2+2g3)tdt^2+1/(2l+2g)t2+(2l-g)/(2lg+2g2)
       | (-l)/(2lg+2g2)t2dt+(-l2+2lg)/(2lg2+2g3)tdt^2+(l2-lg)/(2lg2+2g3)dt^3+1/(2l+2g)t2+(l-2g)/(2lg+2g2)tdt+(-l+g)/(2lg+2g2)dt^2+(2l2+lg)/(2lg2+2g3)dt+(-2l-g)/(2lg+2g2) l/(2lg+2g2)t2dt+(l2-2lg)/(2lg2+2g3)tdt^2+(-l2+lg)/(2lg2+2g3)dt^3+(-1)/(2l+2g)t2+(-2l+g)/(2lg+2g2)tdt+l/(lg+g2)dt^2+(-2l2-lg)/(2lg2+2g3)dt+(4l+3g)/(2lg+2g2) 1/2gtdt+(-1)/2gdt^2+(-1)/g |
       | 0                                                                                                                                                                0                                                                                                                                                           0                          |
       | (-l2)/(2lg+2g2)t2dt^3+(-l3+l2g)/(2lg2+2g3)tdt^4+l/(2l+2g)t2dt^2+(l2-lg)/(2lg+2g2)tdt^3+(-l)/(2l+2g)t2dt+(-5l2+lg)/(2lg+2g2)tdt^2+g/(2l+2g)t2+(5l-g)/(2l+2g)tdt   l2/(2lg+2g2)t2dt^3+(l3-l2g)/(2lg2+2g3)tdt^4+(-l)/(2l+2g)t2dt^2+(-l2)/(lg+g2)tdt^3+l/(2l+2g)t2dt+(5l2-lg)/(2lg+2g2)tdt^2+(-g)/(2l+2g)t2+(-3l)/(l+g)tdt       l/2gtdt^3+1/2tdt-1         |
-      | l2/(2lg+2g2)tdt^3+(l3-l2g)/(2lg2+2g3)dt^4+(-l)/(2l+2g)tdt^2+(-l2+lg)/(2lg+2g2)dt^3+l/(2l+2g)tdt+(5l2-lg)/(2lg+2g2)dt^2+(-g)/(2l+2g)t+(-5l+g)/(2l+2g)dt           (-l2)/(2lg+2g2)tdt^3+(-l3+l2g)/(2lg2+2g3)dt^4+l/(2l+2g)tdt^2+l2/(lg+g2)dt^3+(-l)/(2l+2g)tdt+(-5l2+lg)/(2lg+2g2)dt^2+g/(2l+2g)t+3l/(l+g)dt                   (-l)/2gdt^3+(-1)/2dt       |
+      | (-l2)/(2lg+2g2)tdt^3+(-l3+l2g)/(2lg2+2g3)dt^4+l/(2l+2g)tdt^2+(l2-lg)/(2lg+2g2)dt^3+(-l)/(2l+2g)tdt+(-5l2+lg)/(2lg+2g2)dt^2+g/(2l+2g)t+(5l-g)/(2l+2g)dt           l2/(2lg+2g2)tdt^3+(l3-l2g)/(2lg2+2g3)dt^4+(-l)/(2l+2g)tdt^2+(-l2)/(lg+g2)dt^3+l/(2l+2g)tdt+(5l2-lg)/(2lg+2g2)dt^2+(-g)/(2l+2g)t+(-3l)/(l+g)dt               l/2gdt^3+1/2dt             |
 
                         5                 3
 o17 : Matrix (kk[t, dt])  <--- (kk[t, dt])
@@ -117,11 +117,11 @@ i18 :
       --calculating parametrization matrix Q:
       Q = Dtransposition mingens image syz Dtransposition P
 
-o18 = | 1/l      1/ldt^2+g/l2            |
-      | 1/l      1/ldt^3+g/l2dt          |
-      | 1/l      1/ltdt^2+g/l2t+(-2)/ldt |
-      | dt^2+g/l 0                       |
-      | 0        dt^4+2g/ldt^2+g2/l2     |
+o18 = | 1/l      (-1)/ldt^2+(-g)/l2         |
+      | 1/l      (-1)/ldt^3+(-g)/l2dt       |
+      | 1/l      (-1)/ltdt^2+(-g)/l2t+2/ldt |
+      | dt^2+g/l 0                          |
+      | 0        dt^4+2g/ldt^2+g2/l2        |
 
                         5                 2
 o18 : Matrix (kk[t, dt])  <--- (kk[t, dt])
@@ -137,10 +137,10 @@ i20 :
       --alternative torsion-free check
       Pnew = transpose mingens image syz transpose Q --if the rows have the same linear span as the rows of P, it's torsion free
 
-o20 = {-2} | dt^2+g/l   0            0              (-1)/l        (-1)/l |
+o20 = {-2} | dt^2+g/l   0            0              (-1)/l        1/l    |
       {-3} | dt^3+g/ldt -dt^2+(-g)/l 0              (-1)/ldt+1/l  0      |
       {-3} | tdt^2+g/lt 0            -dt^2+(-g)/l   (-1)/lt+1/l   0      |
-      {-3} | 0          tdt^2+g/lt   -dt^3+(-g)/ldt (-1)/lt+1/ldt 1/l    |
+      {-3} | 0          tdt^2+g/lt   -dt^3+(-g)/ldt (-1)/lt+1/ldt (-1)/l |
 
                         4                 5
 o20 : Matrix (kk[t, dt])  <--- (kk[t, dt])

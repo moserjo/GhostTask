@@ -27,7 +27,7 @@ isHolonomic ext1M --if true, the next line works
 Lambda = Dtransposition (makeCyclic Dtransposition R).Generator
 --gives out non-unique solution, (guessed) alternative used subsequently is (1, dt, t)
 
-LambdaUsed = matrix{{1}, {dt}, {t}}
+LambdaUsed = matrix{{-1}, {-dt}, {-t}}
 P = R|(-LambdaUsed) --define new system
 
 
